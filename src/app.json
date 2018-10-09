@@ -1,0 +1,33 @@
+{
+  "pages": [
+    "pages/filter/main",
+    "pages/home/main",
+    
+    "pages/counter/main",
+    "pages/preface/main",
+    "pages/analysis/main",
+    "pages/search/main",
+    "pages/map/main"
+    
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar":{
+    "list":[
+      {
+        "text":"首页",
+        "pagePath":"pages/home/main",
+        "iconPath":""
+      },
+      {
+        "text":"筛选",
+        "pagePath":"pages/filter/main",
+        "iconPath":""
+      }
+    ]
+  }
+}
