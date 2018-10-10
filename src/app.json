@@ -2,13 +2,15 @@
   "pages": [
     "pages/mine/main",
     "pages/home/main",
+    
     "pages/filter/main",
     "pages/counter/main",
     "pages/preface/main",
     "pages/analysis/main",
     "pages/search/main",
-    "pages/map/main"
-    
+    "pages/map/main",
+    "pages/notice/main",
+    "pages/advice/main"
     
   ],
   "window": {
@@ -21,18 +23,15 @@
     "list":[
       {
         "text":"首页",
-        "pagePath":"pages/home/main",
-        "iconPath":""
+        "pagePath":"pages/home/main"
       },
       {
         "text":"筛选",
-        "pagePath":"pages/filter/main",
-        "iconPath":""
+        "pagePath":"pages/filter/main"
       },
       {
         "text":"我的",
-        "pagePath":"pages/mine/main",
-        "iconPath":""
+        "pagePath":"pages/mine/main"
       }
     ]
   }

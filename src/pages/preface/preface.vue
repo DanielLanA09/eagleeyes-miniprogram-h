@@ -213,7 +213,7 @@ export default {
     if (this.$store.state.USER_INFO.nickName == undefined) {
       api.getUserInfo(userInfo => {
         if (userInfo.success) {
-          me.$store.commit("SET_USER", userInfo.data.userInfo);
+          me.$store.commit("SET_USER", userInfo.data);
         } else {
         }
       });

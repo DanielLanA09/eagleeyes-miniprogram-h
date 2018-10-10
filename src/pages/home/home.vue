@@ -342,8 +342,18 @@ export default {
         title: "基于大数据的二手房小区测评",
         path: "/pages/home/main",
         imageUrl: require("../../../static/imgs/小程序封面.png"),
-        success: function() {},
-        fail: function() {}
+        success: function(res) {
+          wx.request({
+            url: api.getURL("posts/forwardcount"),
+            header: {
+              "content-type": "application/json"
+            },
+            data: { id: option.target.id },
+            success: function(res) {
+
+            }
+          });
+        }
       };
     }
   }

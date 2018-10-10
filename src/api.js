@@ -1,7 +1,7 @@
 // const base = 'http://192.168.31.252:30080';
 
-const base = "http://localhost:8091" //local
-// const base = "http://localhost:9000" //local
+const base = "http://192.168.31.13:8091" //local
+// const base = "http://192.168.31.13:9000" //local
 
 const host = base;
 // const host = base+'/EagleEyeWx';
@@ -100,6 +100,32 @@ export default {
     },
     findQuestions(callback){
         request("GET","/post/findquestions",null,callback);
+    },
+    chooseImg(callback){
+        wx.chooseImage({
+            count:5,
+            sizeType:['compressed','original'],
+            sourceType:['album','camera'],
+            success(res){
+                callback({success:true,data:res})
+            },
+            fail(res){
+                callback({success:false,data:res})
+            }
+        })
+    },
+    upload(filePath,callback){
+        wx.uploadFile({
+            url:host+"/api/file/uploadFile",
+            filePath:filePath,
+            name:"file",
+            success(res){
+                callback({success:true,data:res})
+            },
+            fail(error){
+                callback({success:false,data:error})
+            }
+        })
     }
 }
 
