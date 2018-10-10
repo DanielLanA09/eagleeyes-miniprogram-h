@@ -83,7 +83,8 @@ export default {
     }
   },
   mounted() {
-
+    this.index = 0;
+    this.tags = new Set();    
   }
 };
 </script>

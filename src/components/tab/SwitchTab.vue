@@ -1,16 +1,18 @@
 <template>
     <div class="switch-back">
-        <div class="item" @click="onChoose('精准')"   :class="{active:choosedItem=='精准'}">精准</div>
-        <div class="item" @click="onChoose('个性化')" :class="{active:choosedItem=='个性化'}">个性化</div>
+        <div class="item" @click="onChoose(false)"   :class="{active:choosedItem==false}">精准</div>
+        <div class="item" @click="onChoose(true)" :class="{active:choosedItem==true}">个性化</div>
     </div>
 </template>
 
 <script>
 export default {
-  components: {},
-  data: () => ({
-    choosedItem: "精准"
-  }),
+  props:{
+    choosedItem:{
+      type:Boolean,
+      default:false
+    }
+  },
   methods: {
     onChoose(type) {
       this.choosedItem = type;

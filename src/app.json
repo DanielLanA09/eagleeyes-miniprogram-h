@@ -1,13 +1,14 @@
 {
   "pages": [
-    "pages/filter/main",
+    "pages/mine/main",
     "pages/home/main",
-    
+    "pages/filter/main",
     "pages/counter/main",
     "pages/preface/main",
     "pages/analysis/main",
     "pages/search/main",
     "pages/map/main"
+    
     
   ],
   "window": {
@@ -26,6 +27,11 @@
       {
         "text":"筛选",
         "pagePath":"pages/filter/main",
+        "iconPath":""
+      },
+      {
+        "text":"我的",
+        "pagePath":"pages/mine/main",
         "iconPath":""
       }
     ]

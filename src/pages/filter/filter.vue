@@ -31,10 +31,16 @@
           </div>
         </div>
         <div v-if="personalVisisble">
-          <div class="tips">
+          <div class="tips" v-if="questionVisible">
             如果您还不知道自己适合居住什么样的小区，那就开始个性化测评吧~(1/5)
           </div>
-          <question-card :questions="questions" @onComplete="onQuetionComplete"></question-card>
+          <question-card :questions="questions" @onComplete="onQuetionComplete" v-if="questionVisible"></question-card>
+          <div v-if="!questionVisible">
+            <div class="title1">为您推荐优质房源</div>
+            <div class="recommenList">
+              <card :info=i v-for="(i,k) in recommendList" :key="k"></card>
+            </div>
+          </div>
         </div>
 
     </div>
@@ -176,19 +182,22 @@ export default {
       }
     ],
     cardList: [],
+    recommendList: [],
     district: "520115",
     price: ["0", "20000"],
     tagStr: "",
     cpage: -1,
     questions: [],
-    personalVisisble:false
+    personalVisisble: false,
+    questionVisible: true
   }),
-  onLoad() {
-    
-  },
+  onLoad() {},
   methods: {
     tabChange(e) {
-      this.personalVisisble = !this.personalVisisble;
+      this.personalVisisble = e;
+      if (this.personalVisisble) {
+        this.questionVisible = true;
+      }
     },
     fresh() {
       wx.pageScrollTo({
@@ -229,18 +238,13 @@ export default {
     queyResult() {
       if (this.cpage == -2) {
         //页面已经到最后一页，不再继续请求数据
-        return;
+        // return;
       }
       if (this.cpage == -1) {
         //页面重置了
         this.cardList = [];
       }
       this.cpage++;
-      // wx.showLoading({
-      //   title: "加载中",
-      //   mask: true
-      // });
-
       api.findByDistrictAndPriceAndTag(
         {
           district: this.district,
@@ -252,55 +256,16 @@ export default {
         },
         res => {
           if (res.success) {
-            this.cardList = res.data;
             if (res.data.length == 0) {
+              this.cpage = -2;
               this.showNull = true;
             } else {
               this.showNull = false;
             }
+            this.cardList = this.cardList.concat(res.data);
           }
         }
       );
-
-      // api.tagFilter(
-      //   {
-      //     district: this.district,
-      //     minprice: this.price[0],
-      //     maxprice: this.price[1],
-      //     tagStr: this.tagStr,
-      //     page: this.cpage,
-      //     size: 7
-      //   },
-      //   res => {
-      //     if (res.data.content == undefined) {
-      //       //非分页结果，带有标签查询
-      //       if (res.data.length == 0) {
-      //         this.showNull = true;
-      //       } else {
-      //         this.showNull = false;
-      //       }
-      //       this.cardList = res.data;
-      //       setTimeout(() => {
-      //         wx.hideLoading();
-      //       }, 500);
-      //     } else {
-      //       //分页结果，不带有标签
-      //       if (res.data.size == 0) {
-      //         this.cpage = 0;
-      //         this.showNull = true;
-      //       } else {
-      //         this.showNull = false;
-      //         if (res.data.last == true) {
-      //           this.cpage == -2;
-      //         }
-      //       }
-      //       this.cardList = this.cardList.concat(res.data.content);
-      //       setTimeout(() => {
-      //         wx.hideLoading();
-      //       }, 500);
-      //     }
-      //   }
-      // );
     },
     onDistrictSelect(e) {
       this.district = e.value;
@@ -312,26 +277,39 @@ export default {
       this.cpage = -1;
       this.queyResult();
     },
-    onQuetionComplete(tags){
-      this.personalVisisble = false;
-      this.tagStr = Array.from(tags).join(',')
-      this.queyResult();
+    onQuetionComplete(tags) {
+      let tagStr = Array.from(tags).join(",");
+      this.questionVisible = false;
+      this.recommendRequest(tagStr);
+    },
+    recommendRequest(tagStr) {
+      api.findByDistrictAndPriceAndTag(
+        {
+          district: this.district,
+          minprice: this.price[0],
+          maxprice: this.price[1],
+          tags: tagStr,
+          page: this.cpage,
+          size: 5
+        },
+        res => {
+          if (res.success) {
+            this.recommendList = res.data;
+          }
+        }
+      );
     }
   },
   mounted() {
     this.queyResult();
-    api.findQuestions(res=>{
-      if(res.success){
-        res.data.sort((a,b)=>a.id-b.id)
+    api.findQuestions(res => {
+      if (res.success) {
+        res.data.sort((a, b) => a.id - b.id);
         this.questions = res.data;
       }
-    })
+    });
   },
   onReachBottom() {
-    if (this.tagStr != "") {
-      //当带有标签的时候，不请求数据
-      return;
-    }
     this.queyResult();
   },
   onShareAppMessage: function(option) {
@@ -435,5 +413,14 @@ export default {
   font-size: 17px;
   color: rgb(102, 102, 102);
   padding: 10px 16px;
+}
+.title1 {
+  padding: 0 9px;
+  font-size: 16px;
+  color: rgb(31, 31, 31);
+  font-weight: 600;
+}
+.recommenList {
+  padding: 0 9px;
 }
 </style>
