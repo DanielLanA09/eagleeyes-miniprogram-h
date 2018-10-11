@@ -2,7 +2,7 @@
     <div class="a-container">
         <div class="a-cover">
            <div class="back-home" @click="$emit('onBack')">返回首页</div>
-           <div @click="onCollect"><i class="iconfont collection" :class="{'icon-tubiao_shoucang':!collected,'icon-tubiao_yishoucang':collected}"></i></div>
+           <div class="favorite"><i class="iconfont collection" @click="onCollect" :class="{'icon-tubiao_shoucang':!collected,'icon-tubiao_yishoucang':collected,'active':collected}"></i></div>
            <img :src="coverurl" class="cover-img">
            <img class="bottom-mask" :src="bottomMaskUrl">
            <div class="a-title" v-show="title!=''">
@@ -22,21 +22,28 @@ export default {
     title: {
       type: String,
       default: ""
+    },
+    collected:{
+      type:Boolean,
+      default:false
     }
   },
   data: () => ({
-    bottomMaskUrl: require("../../static/imgs/bottommask.png"),
-    collected:false
+    bottomMaskUrl: require("../../static/imgs/bottommask.png")
   }),
   methods:{
     onCollect(){
       
+      this.$emit("onCollectChange",this.collected)
     }
   }
 };
 </script>
 
 <style scoped lang="less">
+.icon-tubiao_yishoucang.active{
+  color: rgb(255, 128, 151);  
+}
 .collection{
   position: absolute;
   background: rgba(255, 255, 255, 0.8);

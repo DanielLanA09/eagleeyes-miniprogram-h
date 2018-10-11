@@ -1,3 +1,5 @@
+import store from "@/store.js"
+
 // const base = 'http://192.168.31.252:30080';
 
 const base = "http://192.168.31.13:8091" //local
@@ -36,25 +38,25 @@ function request(method, url, data, callback, complete) {
 }
 
 export default {
-    BASE_HOST: base+'/EagleEyeSM/api/file/downloadFile/',
+    BASE_HOST: base + '/EagleEyeSM/api/file/downloadFile/',
     getUserInfo(callback) {
         console.log("GETTING USER INFO...");
         wx.getUserInfo({
             withCredentials: true,
             lang: "zh_CN",
             success(res) {
-                console.log('USER INFO IS:',res.userInfo);
-                if(!callback){
+                console.log('USER INFO IS:', res.userInfo);
+                if (!callback) {
                     return
                 }
-                callback({ success: true, data: res.userInfo})
+                callback({ success: true, data: res.userInfo })
             },
             fail(res) {
-                console.log("---------USER INFO GETING FAILED!!---------",res);
-                if(!callback){
+                console.log("---------USER INFO GETING FAILED!!---------", res);
+                if (!callback) {
                     return
                 }
-                callback({ success: false, data: res})
+                callback({ success: false, data: res })
             }
         })
     },
@@ -98,34 +100,67 @@ export default {
         console.log('FINDING PARAMS BY DEVISION ID...');
         request("GET", "/post/findparams/" + devId, null, callback);
     },
-    findQuestions(callback){
-        request("GET","/post/findquestions",null,callback);
+    findQuestions(callback) {
+        request("GET", "/post/findquestions", null, callback);
     },
-    chooseImg(callback){
+    chooseImg(callback) {
         wx.chooseImage({
-            count:5,
-            sizeType:['compressed','original'],
-            sourceType:['album','camera'],
-            success(res){
-                callback({success:true,data:res})
+            count: 5,
+            sizeType: ['compressed', 'original'],
+            sourceType: ['album', 'camera'],
+            success(res) {
+                callback({ success: true, data: res })
             },
-            fail(res){
-                callback({success:false,data:res})
+            fail(res) {
+                callback({ success: false, data: res })
             }
         })
     },
-    upload(filePath,callback){
+    upload(filePath, callback) {
         wx.uploadFile({
-            url:host+"/api/file/uploadFile",
-            filePath:filePath,
-            name:"file",
-            success(res){
-                callback({success:true,data:res})
+            url: host + "/api/file/uploadFile",
+            filePath: filePath,
+            name: "file",
+            success(res) {
+                callback({ success: true, data: res })
             },
-            fail(error){
-                callback({success:false,data:error})
+            fail(error) {
+                callback({ success: false, data: error })
             }
         })
+    },
+    login(data,callback) {
+        console.log('START LOGIN...');
+        request("POST", "/user/login", data, callback);
+    },
+    simLogin(callback){
+        wx.getUserInfo({
+            withCredentials: true,
+            lang: "zh_CN",
+            success(res) {
+                console.log('USER INFO IS:', res.userInfo);
+                let data = res.userInfo;
+                wx.login({
+                    success(logRes){
+                        data.code = logRes.code;
+                        request("POST", "/user/login", data, callback);
+                    }
+                })
+            },
+            fail(res) {
+                console.log("---------USER INFO GETING FAILED!!---------", res);
+
+            }
+        })
+    },
+    addFavorite(data,callback){
+        request("POST","/user/collect",data,callback);
+    },
+    removeFavorite(data,callback){
+        request("POST",'/user/deletecollect',data,callback);
+    },
+    isFavorite(data,callback){
+        request("GET","/user/iscollected",data,callback);
     }
 }
 

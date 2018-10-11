@@ -4,7 +4,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-      USER_INFO:{},
+      USER_INFO:null,
       BASE_HOST:"",
       DEVISIONS:null,
       CURRENT_DEVISION:null,

@@ -35,12 +35,7 @@
 import api from "@/api";
 export default {
   onLoad() {
-    if (this.$store.state.USER_INFO.nickName == undefined) {
-      this.login();
-    } else {
-      this.user.icon = this.$store.state.USER_INFO.avatarUrl;
-      this.user.name = this.$store.state.USER_INFO.nickName;
-    }
+    this.login();
   },
   onShareAppMessage: res => {
     return {
@@ -57,21 +52,36 @@ export default {
   }),
   methods: {
     login() {
-      // api.getUserInfo(userInfo => {
-      //   if (userInfo.success) {
-      //     this.user.icon = userInfo.data.avatarUrl;
-      //     this.user.name = userInfo.data.nickName;
-      //     this.$store.commit("SET_USER", userInfo.data);
-      //   }
-      // });
-      wx.login({
-        success(res){
-          console.log("success:",res)
-        },
-        fail(error){
-          console.log("error:",error)
-        }
-      })
+      let me = this;
+      if (!this.$store.state.USER_INFO) {
+        api.getUserInfo(userInfo => {
+          if (userInfo.success) {
+            this.user.icon = userInfo.data.avatarUrl;
+            this.user.name = userInfo.data.nickName;
+            this.$store.commit("SET_USER", userInfo.data);
+            wx.login({
+              success(res) {
+                api.login(
+                  {
+                    nickName: userInfo.data.nickName,
+                    avatarUrl: userInfo.data.avatarUrl,
+                    gender: userInfo.data.gender,
+                    city: userInfo.data.city,
+                    province: userInfo.data.province,
+                    language: userInfo.data.language,
+                    code: res.code
+                  },
+                  loginRes => {
+                    if (loginRes.success) {
+                      me.$store.commit("SET_USER", loginRes.data);
+                    }
+                  }
+                );
+              }
+            });
+          }
+        });
+      }
     },
     navTo(index) {
       switch (index) {

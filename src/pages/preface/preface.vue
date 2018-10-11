@@ -1,7 +1,7 @@
 <template>
   <div class="p-container">
     <div>
-      <mcover :coverurl="coverurl" @onBack="onBack"></mcover>
+      <mcover :coverurl="coverurl" @onBack="onBack" @onCollectChange="onCollectChange" :collected="favorite"></mcover>
     </div>
     <div class="p-body e-center">
       <div class="p-general">
@@ -154,6 +154,7 @@ export default {
       mW: 250
     },
     coverurl: "",
+    favorite:false,
     notations: [],
     contentlst1: [
       {
@@ -185,19 +186,6 @@ export default {
     outerList: [],
     innerList: [],
     gStart: false,
-    marker: {
-      shown: false,
-      latitude: 23.099994,
-      longitude: 113.32452,
-      markers: [
-        {
-          id: 1,
-          latitude: 23.099994,
-          longitude: 113.32452,
-          name: "T.I.T 创意园"
-        }
-      ]
-    },
     postContent: [],
     modules: [],
     latitude: "",
@@ -205,25 +193,29 @@ export default {
     positionName: "",
     aroundList: [],
     pid: 0,
-    id:0
+    id: 0
   }),
   onLoad() {
     let me = this;
     let cover = this.$store.state.CURRENT_COVER;
-    if (this.$store.state.USER_INFO.nickName == undefined) {
-      api.getUserInfo(userInfo => {
-        if (userInfo.success) {
-          me.$store.commit("SET_USER", userInfo.data);
-        } else {
+    this.favorite = false;
+    if (this.$store.state.USER_INFO != null) {
+      api.simLogin(logRes => {
+        if (logRes.success) {
+          this.$store.commit("SET_USER", logRes.data);
+          api.isFavorite({userId:logRes.data.userId,coverId:me.id},isFavoriteRes=>{
+            if(isFavoriteRes.success){
+              me.favorite = isFavoriteRes.data;
+            }
+          })
         }
       });
     }
-
-    if(cover){
+    if (cover) {
       wx.setNavigationBarTitle({
         title: cover.title
       });
-      
+
       me.id = Number(cover.id);
       me.title = cover.title;
       me.price = cover.price;
@@ -234,9 +226,9 @@ export default {
       me.requestDevs(cover.id);
     }
   },
-  mounted(){
-    this.$refs.radar1.initialize()
-    this.$refs.radar2.initialize()
+  mounted() {
+    this.$refs.radar1.initialize();
+    this.$refs.radar2.initialize();
   },
   onShareAppMessage: function(option) {
     let me = this;
@@ -252,8 +244,7 @@ export default {
               "content-type": "application/json"
             },
             data: { id: me.pid },
-            success: function(res) {
-            }
+            success: function(res) {}
           });
         }
       };
@@ -273,70 +264,113 @@ export default {
         url: "/pages/home/main"
       });
     },
+    onCollectChange(e) {
+      if (!e) {
+        api.addFavorite(
+          {
+            userId: this.$store.state.USER_INFO.userId,
+            coverId: this.id,
+            openId: this.$store.state.USER_INFO.openId
+          },
+          res => {
+            if (res.success) {
+              this.favorite = res.data;
+            }
+          }
+        );
+      }else{
+        api.removeFavorite(
+          {
+            userId: this.$store.state.USER_INFO.userId,
+            coverId: this.id,
+            openId: this.$store.state.USER_INFO.openId
+          },
+          res=>{
+            if(res.success){
+              this.favorite = res.data;
+            }
+          }
+        )
+      }
+    },
     goDetail() {
       // api.saveAccessHistory(this.$store.state.USER_INFO, "综合页面查看详情", 5,this.title);
       wx.navigateTo({
-        url:
-          "/pages/analysis/main?cId=" +
-          this.id
+        url: "/pages/analysis/main?cId=" + this.id
       });
     },
     requestDevs(id) {
       let me = this;
-
       //FindArround
       api.findArround(me.latitude, me.longitude, res => {
-        if(res.success){
-          res.data.map(i=>{
-            if(i.img){
+        if (res.success) {
+          res.data.map(i => {
+            if (i.img) {
               let imgs = i.img.split("|");
               i.img = this.$store.state.BASE_HOST + imgs[0];
             }
-          })
+          });
           me.aroundList = res.data;
         }
       });
-
       //find preface dev and it's params
       api.findDevisionAndParams(me.id, 0, res => {
         if (res.success) {
-          if(res.data.length==0){
-            console.log('------------THIS PREFACE DEVISION DO NOT HAS ANY PARAMS---------------');
+          if (res.data.length == 0) {
+            console.log(
+              "------------THIS PREFACE DEVISION DO NOT HAS ANY PARAMS---------------"
+            );
             return;
           }
 
           let params = res.data[0].params;
           me.contentlst1 = [];
           let builtTime = params.find(i => i.paramName == "建成时间");
-          if(builtTime){me.contentlst1.push(builtTime)}
+          if (builtTime) {
+            me.contentlst1.push(builtTime);
+          }
 
           let builtArea = params.find(i => i.paramName == "建筑面积");
-          if(builtArea){me.contentlst1.push(builtArea)}
+          if (builtArea) {
+            me.contentlst1.push(builtArea);
+          }
 
           let param1 = params.find(i => i.paramName == "容积率");
-          if(param1){me.contentlst1.push(param1)}
+          if (param1) {
+            me.contentlst1.push(param1);
+          }
 
           let param2 = params.find(i => i.paramName == "绿化覆盖率");
-          if(param2){me.contentlst1.push(param2)}
+          if (param2) {
+            me.contentlst1.push(param2);
+          }
 
           let param3 = params.find(i => i.paramName == "建筑类型");
-          if(param3){me.contentlst1.push(param3)}
+          if (param3) {
+            me.contentlst1.push(param3);
+          }
 
           let collectTime = params.find(i => i.paramName == "采集时间");
-          if(collectTime){me.contentlst2.采集时间 = collectTime.paramData }
+          if (collectTime) {
+            me.contentlst2.采集时间 = collectTime.paramData;
+          }
 
           let param4 = params.find(i => i.paramName == "开发商");
-          if(param4){me.contentlst2.开发商 = param4.paramData }
+          if (param4) {
+            me.contentlst2.开发商 = param4.paramData;
+          }
 
           let address = params.find(i => i.paramName == "小区地址");
-          if(address){me.contentlst2.小区地址 = address.paramData }
+          if (address) {
+            me.contentlst2.小区地址 = address.paramData;
+          }
         }
       });
 
       //FIND ALL DEVIDIONS AND SET THE GRAPHS.
       api.findAllDev(me.id, res => {
         if (res.success) {
-          res.data.map(i=>{
+          res.data.map(i => {
             // i.icon=this.iconMap[i.devName];
             i.color = me.setColor(i.mark);
           });
@@ -370,40 +404,36 @@ export default {
     },
     goNav(dev) {
       api.saveAccessHistory({
-        nickName:this.$store.state.USER_INFO.nickName,
-        gender:this.$store.state.USER_INFO.gender,
-        language:this.$store.state.USER_INFO.language,
-        city:this.$store.state.USER_INFO.city,
-        province:this.$store.state.USER_INFO.province,
-        country:this.$store.state.USER_INFO.country,
-        avataUrl:this.$store.state.USER_INFO.avataUrl,
-        functionName:"综合页面导航",
-        functionCode:4,
-        project:this.title
-      })
+        nickName: this.$store.state.USER_INFO.nickName,
+        gender: this.$store.state.USER_INFO.gender,
+        language: this.$store.state.USER_INFO.language,
+        city: this.$store.state.USER_INFO.city,
+        province: this.$store.state.USER_INFO.province,
+        country: this.$store.state.USER_INFO.country,
+        avataUrl: this.$store.state.USER_INFO.avataUrl,
+        functionName: "综合页面导航",
+        functionCode: 4,
+        project: this.title
+      });
       this.$store.commit("SET_CURRENT_DEVISION", dev);
       wx.navigateTo({
-        url:
-          "/pages/analysis/main?cId=" +
-          p.id +
-          "&devName=" +
-          p.devName
+        url: "/pages/analysis/main?cId=" + p.id + "&devName=" + p.devName
       });
     },
     goMap() {
       let me = this;
       api.saveAccessHistory({
-        nickName:this.$store.state.USER_INFO.nickName,
-        gender:this.$store.state.USER_INFO.gender,
-        language:this.$store.state.USER_INFO.language,
-        city:this.$store.state.USER_INFO.city,
-        province:this.$store.state.USER_INFO.province,
-        country:this.$store.state.USER_INFO.country,
-        avataUrl:this.$store.state.USER_INFO.avataUrl,
-        functionName:"综合页面地图",
-        functionCode:3,
-        project:this.title
-      })
+        nickName: this.$store.state.USER_INFO.nickName,
+        gender: this.$store.state.USER_INFO.gender,
+        language: this.$store.state.USER_INFO.language,
+        city: this.$store.state.USER_INFO.city,
+        province: this.$store.state.USER_INFO.province,
+        country: this.$store.state.USER_INFO.country,
+        avataUrl: this.$store.state.USER_INFO.avataUrl,
+        functionName: "综合页面地图",
+        functionCode: 3,
+        project: this.title
+      });
       wx.navigateTo({
         url:
           "/pages/map/main?latitude=" +

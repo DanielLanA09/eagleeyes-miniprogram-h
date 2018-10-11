@@ -1,7 +1,9 @@
 {
   "pages": [
-    "pages/mine/main",
+    "pages/favorite/main",
     "pages/home/main",
+    
+    "pages/mine/main",
     
     "pages/filter/main",
     "pages/counter/main",
