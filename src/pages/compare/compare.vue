@@ -7,13 +7,13 @@
         <!-- FILTER TITLE -->
         <div class="title">
             <div>
-                <m-select></m-select>
+                <m-select @onSelect="onDistrictSelected"></m-select>
             </div>
             <div class="center">
-                <m-select :list="priceList"></m-select>
+                <m-select :list="priceList" @onSelect="onPriceSelected"></m-select>
             </div>
             <div>
-                <m-select></m-select>
+                <t-select @onSelected="onTagSelected"></t-select>
             </div>
         </div>
         <!-- COMPARE CARDS -->
@@ -27,7 +27,6 @@
                 <m-card v-for="(i,k) in availList" :key="k" :info="i" :edit="true" @onClick="onSelect(k)" :checked="i.checked"></m-card>
             </div>
         </div>
-        <!-- TODO: FLOAT BUTTON -->
         <div class="button" @click="onCompare">
           <div>开始对比</div>
         </div>
@@ -38,10 +37,12 @@
 import api from "@/api.js";
 import mSelect from "@/components/select/simSelect.vue";
 import mCard from "@/components/card/favoriteCard.vue";
+import tSelect from "@/components/select/tagSelect.vue";
 export default {
   components: {
     mSelect,
-    mCard
+    mCard,
+    tSelect
   },
   data: () => ({
     priceList: [
@@ -139,7 +140,16 @@ export default {
       this.selectedList.splice(k, 1);
     },
     onCompare(){
-      
+
+    },
+    onTagSelected(e){
+      this.tagStr = e.join(',');
+    },
+    onDistrictSelected(e){
+      this.district = e;
+    },
+    onPriceSelected(e){
+      this.price = e;
     }
   }
 };
@@ -172,13 +182,10 @@ export default {
   border-right: 1px solid rgb(209, 209, 209);
   border-left: 1px solid rgb(209, 209, 209);
 }
-.selected{
-  
-}
 .button{
   position:fixed;
-  right:18px;
-  bottom: 10px;
+  right:30rpx;
+  bottom: 50px;
   border-radius: 100%;
   background: rgb(74, 217, 183);
   width: 42px;

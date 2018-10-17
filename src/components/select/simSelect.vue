@@ -2,7 +2,7 @@
     <div class="select-back" >
         <div class="select-name h-left select-input" :style="{justifyContent:align}" @click="selectShow = !selectShow">
             <span class="select-content">{{selected}}</span>
-            <span class="select-icon"><i class="iconfont icon-arrow-left"></i></span>
+            <i class="iconfont icon-xiaotubiao_fuzhi-27"></i>
         </div>
         <div class="select-item" :style="{left:left}" v-if="selectShow">
             <div v-for="(i,k) in list" :key="k" @click="onSelect(i)" class="item-block">{{i.name}}</div>
@@ -76,8 +76,8 @@ export default {
       this.selectShow = !this.selectShow;
       this.$emit("onSelect", i);
     },
-    onCancel(){
-      this.selectShow=false;
+    onCancel() {
+      this.selectShow = false;
     }
   }
 };
@@ -93,18 +93,15 @@ export default {
   .select-input {
     min-width: 140rpx;
     display: flex;
+    align-items: center;
     .select-content {
       font-size: 28rpx;
       color: #4d4d4d;
       font-weight: 500;
     }
-    .select-icon {
-      margin-top: 8rpx;
-      margin-left: 15rpx;
-      i {
-        font-size: 24rpx;
-        color: #4d4d4d;
-      }
+    i {
+      font-size: 24px;
+      color: #4d4d4d;
     }
   }
   .select-item {
@@ -122,7 +119,7 @@ export default {
       white-space: nowrap;
     }
   }
-  .mask{
+  .mask {
     position: fixed;
     margin-top: 20rpx;
     left: 0;

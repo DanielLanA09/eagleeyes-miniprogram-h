@@ -15,7 +15,7 @@ function request(method, url, data, callback, complete) {
         data: data,
         header: { 'content-type': 'application/json' },
         success(res) {
-            console.log('-------------------REQUEST SECCESS!---------------------');
+            console.log('-------------------REQUEST SECCESS!---------------------',res);
             if (!callback) {
                 return;
             }

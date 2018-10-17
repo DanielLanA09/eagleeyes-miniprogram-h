@@ -107,12 +107,6 @@ export default {
       this.info.checked = !this.info.checked;
       this.$emit("onClick",this.info);
     }
-  },
-  mounted() {
-    let ctx = wx.createCanvasContext("mark1");
-    setTimeout(() => {
-      this.drawCircle(ctx);
-    }, 200);
   }
 };
 </script>

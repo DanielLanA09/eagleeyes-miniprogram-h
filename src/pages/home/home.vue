@@ -464,7 +464,7 @@ export default {
     height: 84rpx;
     border-radius: 100%;
     i {
-      font-size: 45px;
+      font-size: 30px;
       color: #808080;
     }
   }
