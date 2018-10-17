@@ -1,6 +1,9 @@
 <template>
     <div>
-        <div class="profile-back e-center" style="background-image:url('../../../static/imgs/mine-back.png')">
+        <div class="profile-back">
+            <div class="back">
+              <img :src="backImg" alt="">
+            </div>
             <div class="profile" @click="login">
                 <img class="profile-icon" :src="user.icon">
                 <div class="profile-name">{{user.name}}</div>
@@ -35,7 +38,13 @@
 import api from "@/api";
 export default {
   onLoad() {
-    this.login();
+    api.simLogin(res => {
+      if (res.success) {
+        this.user.icon = res.data.avatarUrl;
+        this.user.name = res.data.nickName;
+      } else {
+      }
+    });
   },
   onShareAppMessage: res => {
     return {
@@ -48,7 +57,8 @@ export default {
     user: {
       icon: "",
       name: "点击登陆"
-    }
+    },
+    backImg: "../../../static/imgs/mine-back.png"
   }),
   methods: {
     login() {
@@ -85,6 +95,21 @@ export default {
     },
     navTo(index) {
       switch (index) {
+        case 0: {
+          wx.navigateTo({
+            url: "/pages/favorite/main"
+          });
+          break;
+        }
+        case 1: {
+          wx.showModal({
+            title: "提示",
+            content: "功能开发中，敬请期待！",
+            showCancel: false,
+            confirmText: "关闭"
+          });
+          break;
+        }
         case 2: {
           wx.navigateTo({
             url: "/pages/advice/main"
@@ -116,8 +141,22 @@ export default {
   background-size: cover;
   background-image: url("../../../static/imgs/mine-back.png");
 }
+.back {
+  height: 100%;
+  width: 100%;
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
 .profile {
   text-align: center;
+  position: absolute;
+  top: 29px;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
 }
 .profile-icon {
   height: 86px;

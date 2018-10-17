@@ -321,7 +321,7 @@ export default {
       });
 
       //FETCH CURRENT DEVISION'S MODULEs
-      api.findDevisionModules(cover.id, dev.devName, res => {
+      api.findDevisionModules(cover.coverId, dev.devName, res => {
         if (res.success) {
           res.data.map((i, k) => {
             i.content = preserveHelper.formatModule(i);

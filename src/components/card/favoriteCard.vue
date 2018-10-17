@@ -1,16 +1,16 @@
 <template>
-    <div class="card-box">
-        <div><i class="iconfont" :class="{'icon-quan-2':!checked,'icon-chenggong':checked}"></i></div>
-        <div class="card-content">
-          <div class="card-cover" @click="goView()">
+    <div class="card-box" >
+        <div v-if="edit" class="check" @click="onClick"><i class="iconfont" :class="{'icon-shanchushoucang_weixuanzhong':!info.checked,'icon-shanchushoucang_xuanzhong':info.checked,'active':info.checked}"></i></div>
+        <div class="card-content" :class="{'active':info.checked}">
+          <div class="card-cover" @click="onClick">
               <img :src="setImg">
           </div>
           <div class="content">
-              <div class="title-block h-between" @click="goView()">
+              <div class="title-block h-between" :class="{'edit':edit}" @click="onClick">
                   <div>{{info.title}}</div>
                   <div class="price">￥{{info.price}}</div>
               </div>
-              <div @click="goView()" class="notation-blcok">
+              <div @click="onClick" class="notation-blcok">
                   <div class="notation" >
                       <word-tag :list="info.tags" :title="'优点'"></word-tag>
                   </div>
@@ -56,9 +56,9 @@ export default {
         checked:false
       }
     },
-    houseType: {
-      type: String,
-      default: ""
+    edit:{
+      type:Boolean,
+      default:false
     }
   },
   computed: {
@@ -66,8 +66,13 @@ export default {
       return (this.info.mark / 10).toFixed(1);
     },
     setImg(){
-      let imgs = this.info.img.split("|");
-      return this.$store.state.BASE_HOST+imgs[0]
+      let imgs=null;
+      if(this.info.img){
+        imgs = this.info.img.split("|");
+        return this.$store.state.BASE_HOST+imgs[0]
+      }else{
+        return "";
+      }
     }
   },
   watch: {
@@ -81,7 +86,8 @@ export default {
   data() {
     return {
       // canvasId: "mark1"
-      host: this.$store.state.BASE_HOST
+      host: this.$store.state.BASE_HOST,
+      
     };
   },
   methods: {
@@ -97,24 +103,9 @@ export default {
           me.info.place
       });
     },
-    drawCircle(ctx) {
-      let r = this.info.mark * 2 / 100;
-      ctx.beginPath();
-      ctx.arc(25, 25, 20, 0, r * Math.PI);
-      ctx.lineWidth = 5;
-      ctx.setStrokeStyle("#4ad9b7");
-      ctx.stroke();
-
-      ctx.setFontSize(13);
-      const length = ctx.measureText(this.info.mark);
-      ctx.fillText(this.info.mark, 25 - Number(length.width) / 2, 25 + 5);
-      ctx.draw(true);
-    },
-    goView() {
-      // api.saveAccessHistory(this.$store.state.USER_INFO, "综合页面", 2, this.info.title);
-      wx.navigateTo({
-        url: "/pages/preface/main?id=" + this.info.id+"&title="+this.info.title
-      });
+    onClick() {
+      this.info.checked = !this.info.checked;
+      this.$emit("onClick",this.info);
     }
   },
   mounted() {
@@ -127,11 +118,18 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.check{
+  margin:0 5px;
+}
+.icon-shanchushoucang_xuanzhong.active{
+  color: rgb(74, 217, 183);
+}
 .card-box {
   position: relative;
   margin: 25rpx 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   .card-content {
     box-shadow: 0 0 5rpx 5rpx #e5e9ef;
     border-radius: 25rpx;
@@ -159,6 +157,9 @@ export default {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+      }
+      .title-block.edit{
+        width: 210px;
       }
       .notation-blcok {
         margin-top: 10px;
@@ -213,13 +214,14 @@ export default {
       }
     }
   }
+  .card-content.active{
+    box-shadow: 0 0 5rpx 5rpx rgb(74, 217, 183);
+  }
 }
-
 .echarts-wrap {
   width: 100%;
   height: 300px;
 }
-
 .share-button {
   padding: 0;
   border: none;

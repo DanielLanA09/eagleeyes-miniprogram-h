@@ -11,16 +11,12 @@ export default {
     console.log("app created and cache logs by setStorageSync");
   },
   onLaunch: function() {
-    let me = this;
+    let that = this;
     mta.App.init({
       appID: "500625991"
     });
-    api.getUserInfo(userInfo => {
-      if (userInfo.success) {
-        me.$store.commit("SET_USER", userInfo.data);
-      }
-    });
-    me.$store.commit("SET_BASE_HOST",api.BASE_HOST);
+    that.$store.commit("SET_BASE_HOST",api.BASE_HOST);
+    api.simLogin();
   }
 };
 </script>

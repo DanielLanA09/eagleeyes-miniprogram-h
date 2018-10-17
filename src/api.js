@@ -1,12 +1,11 @@
 import store from "@/store.js"
 
 // const base = 'http://192.168.31.252:30080';
-
-const base = "http://192.168.31.13:8091" //local
+const base = "http://localhost:8091" //local
 // const base = "http://192.168.31.13:9000" //local
 
 const host = base;
-// const host = base+'/EagleEyeWx';
+// const host = base+'/eagleeyes-miniprogram';
 
 
 function request(method, url, data, callback, complete) {
@@ -38,7 +37,7 @@ function request(method, url, data, callback, complete) {
 }
 
 export default {
-    BASE_HOST: base + '/EagleEyeSM/api/file/downloadFile/',
+    BASE_HOST: base + '/eagleeyes-miniprogram/api/file/downloadFile/',
     getUserInfo(callback) {
         console.log("GETTING USER INFO...");
         wx.getUserInfo({
@@ -129,21 +128,27 @@ export default {
             }
         })
     },
-    login(data,callback) {
+    login(data, callback) {
         console.log('START LOGIN...');
         request("POST", "/user/login", data, callback);
     },
-    simLogin(callback){
+    simLogin(callback) {
         wx.getUserInfo({
             withCredentials: true,
             lang: "zh_CN",
             success(res) {
-                console.log('USER INFO IS:', res.userInfo);
                 let data = res.userInfo;
                 wx.login({
-                    success(logRes){
+                    success(logRes) {
                         data.code = logRes.code;
-                        request("POST", "/user/login", data, callback);
+                        request("POST", "/user/login", data, loginRes => {
+                            if (loginRes.success) {
+                                store.commit("SET_USER", loginRes.data);
+                                if (callback) {
+                                    callback({ success: true, data: loginRes.data })
+                                }
+                            }
+                        });
                     }
                 })
             },
@@ -153,14 +158,20 @@ export default {
             }
         })
     },
-    addFavorite(data,callback){
-        request("POST","/user/collect",data,callback);
+    addFavorite(data, callback) {
+        request("POST", "/user/collect", data, callback);
     },
-    removeFavorite(data,callback){
-        request("POST",'/user/deletecollect',data,callback);
+    removeFavorite(data, callback) {
+        request("POST", '/user/deletecollection', data, callback);
     },
-    isFavorite(data,callback){
-        request("GET","/user/iscollected",data,callback);
+    removeFavorites(data, callback) {
+        request("POST", '/user/deletecollections', data, callback);
+    },
+    isFavorite(data, callback) {
+        request("GET", "/user/iscollected", data, callback);
+    },
+    findFavorite(openId, callback) {
+        request("GET", "/user/findcollection", {openId:openId}, callback);
     }
 }
 

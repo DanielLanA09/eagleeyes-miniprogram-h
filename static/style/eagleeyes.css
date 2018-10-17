@@ -127,3 +127,14 @@
 .eagle-fontffamily{
     font-family: "PinFang SC"
 }
+.eagle-button {
+    border-radius: 50px;
+    width: 78px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 16px;
+    color: rgb(51, 51, 51);
+    box-shadow: 0 0 5rpx 5rpx rgba(145, 161, 189, 0.5);
+    font-weight: 500;
+  }

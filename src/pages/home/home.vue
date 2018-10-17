@@ -269,21 +269,17 @@ export default {
         //last page, no request.
         return;
       }
-
       wx.showLoading({
         title: "加载中",
         mask: false
       });
-
       if (me.requestCondition.devision == "污染") {
         this.requestCondition.mark = 50;
       } else {
         this.requestCondition.mark = 70;
       }
-
       api.homeList(this.requestCondition, res => {
         if (res.success) {
-          
           if(res.data.length==0){
             this.requestCondition.page = -2
             console.log('NO MORE DATA REQUESTED!')

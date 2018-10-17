@@ -36,7 +36,10 @@
           </div>
           <question-card :questions="questions" @onComplete="onQuetionComplete" v-if="questionVisible"></question-card>
           <div v-if="!questionVisible">
-            <div class="title1">为您推荐优质房源</div>
+            <div class="title1 h-between">
+              <div>根据测试为您推荐</div>
+              <div class="eagle-button" @click="onResetQuestion">重置问题</div>
+            </div>
             <div class="recommenList">
               <card :info=i v-for="(i,k) in recommendList" :key="k"></card>
             </div>
@@ -199,6 +202,9 @@ export default {
         this.questionVisible = true;
       }
     },
+    onResetQuestion(){
+      this.questionVisible = true;
+    },
     fresh() {
       wx.pageScrollTo({
         scrollTop: 0,
@@ -252,7 +258,8 @@ export default {
           maxprice: this.price[1],
           tags: this.tagStr,
           page: this.cpage,
-          size: 5
+          size: 5,
+          title:""
         },
         res => {
           if (res.success) {
@@ -278,22 +285,36 @@ export default {
       this.queyResult();
     },
     onQuetionComplete(tags) {
-      let tagStr = Array.from(tags).join(",");
+      this.tagStr = Array.from(tags).join(",");
       this.questionVisible = false;
-      this.recommendRequest(tagStr);
+      this.cpage = 0;
+      this.recommendRequest();
     },
-    recommendRequest(tagStr) {
+    recommendRequest() {
+      if (this.cpage == -2) {
+        //页面已经到最后一页，不再继续请求数据
+        // return;
+      }
+      if (this.cpage == -1) {
+        //页面重置了
+        this.cardList = [];
+      }
+      this.cpage++;
       api.findByDistrictAndPriceAndTag(
         {
           district: this.district,
           minprice: this.price[0],
           maxprice: this.price[1],
-          tags: tagStr,
+          tags: this.tagStr,
+          mark: 70,
           page: this.cpage,
-          size: 5
+          size: 30
         },
         res => {
           if (res.success) {
+            if(res.data.length==0){
+              this.cpage = -2;
+            }
             this.recommendList = res.data;
           }
         }
@@ -310,7 +331,12 @@ export default {
     });
   },
   onReachBottom() {
-    this.queyResult();
+    if (this.personalVisisble) {
+      this.recommendRequest()
+    }else{
+      this.queyResult();
+    }
+    
   },
   onShareAppMessage: function(option) {
     if (option.from === "button") {

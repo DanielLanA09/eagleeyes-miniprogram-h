@@ -41,7 +41,7 @@
           <title :title="'周边配套'"></title>
         </div>
         <div class="body e-center">
-          <pgraph1 ref="radar1" :coverId="id" :start="gStart" :mstyle=gStyle :mData="outerList" @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph1>
+          <pgraph1 ref="radar1" :coverId="coverId" :start="gStart" :mstyle=gStyle :mData="outerList" @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph1>
         </div>
         <div class="tips-text e-center">
           <span><span>点击上方标签，查看模块详情</span></span>
@@ -193,7 +193,7 @@ export default {
     positionName: "",
     aroundList: [],
     pid: 0,
-    id: 0
+    coverId: 0
   }),
   onLoad() {
     let me = this;
@@ -203,7 +203,7 @@ export default {
       api.simLogin(logRes => {
         if (logRes.success) {
           this.$store.commit("SET_USER", logRes.data);
-          api.isFavorite({userId:logRes.data.userId,coverId:me.id},isFavoriteRes=>{
+          api.isFavorite({userId:logRes.data.userId,coverId:me.coverId},isFavoriteRes=>{
             if(isFavoriteRes.success){
               me.favorite = isFavoriteRes.data;
             }
@@ -216,14 +216,14 @@ export default {
         title: cover.title
       });
 
-      me.id = Number(cover.id);
+      me.coverId = Number(cover.coverId);
       me.title = cover.title;
       me.price = cover.price;
       me.notations = cover.tags;
       me.latitude = cover.latitude;
       me.longitude = cover.longitude;
 
-      me.requestDevs(cover.id);
+      me.requestDevs(cover.coverId);
     }
   },
   mounted() {
@@ -269,7 +269,7 @@ export default {
         api.addFavorite(
           {
             userId: this.$store.state.USER_INFO.userId,
-            coverId: this.id,
+            coverId: this.coverId,
             openId: this.$store.state.USER_INFO.openId
           },
           res => {
@@ -282,7 +282,7 @@ export default {
         api.removeFavorite(
           {
             userId: this.$store.state.USER_INFO.userId,
-            coverId: this.id,
+            coverId: this.coverId,
             openId: this.$store.state.USER_INFO.openId
           },
           res=>{
@@ -296,7 +296,7 @@ export default {
     goDetail() {
       // api.saveAccessHistory(this.$store.state.USER_INFO, "综合页面查看详情", 5,this.title);
       wx.navigateTo({
-        url: "/pages/analysis/main?cId=" + this.id
+        url: "/pages/analysis/main?cId=" + this.coverId
       });
     },
     requestDevs(id) {
@@ -314,7 +314,7 @@ export default {
         }
       });
       //find preface dev and it's params
-      api.findDevisionAndParams(me.id, 0, res => {
+      api.findDevisionAndParams(me.coverId, 0, res => {
         if (res.success) {
           if (res.data.length == 0) {
             console.log(
@@ -368,7 +368,7 @@ export default {
       });
 
       //FIND ALL DEVIDIONS AND SET THE GRAPHS.
-      api.findAllDev(me.id, res => {
+      api.findAllDev(me.coverId, res => {
         if (res.success) {
           res.data.map(i => {
             // i.icon=this.iconMap[i.devName];
@@ -383,7 +383,7 @@ export default {
 
       //FIND PREFACE MODULES.
       //FIXME:FIND DEVISION NAME OF TYPE 0
-      api.findDevisionModules(me.id, "综合", res => {
+      api.findDevisionModules(me.coverId, "综合", res => {
         if (res.success) {
           res.data.map((i, key) => {
             res.data[key].content = preserveHelper.formatModule(res.data[key]);
@@ -417,7 +417,7 @@ export default {
       });
       this.$store.commit("SET_CURRENT_DEVISION", dev);
       wx.navigateTo({
-        url: "/pages/analysis/main?cId=" + p.id + "&devName=" + p.devName
+        url: "/pages/analysis/main?cId=" + p.coverId + "&devName=" + p.devName
       });
     },
     goMap() {
@@ -446,7 +446,7 @@ export default {
     },
     goView(i) {
       wx.redirectTo({
-        url: "/pages/preface/main?id=" + i.id
+        url: "/pages/preface/main?id=" + i.coverId
       });
     },
     requestRound(detail) {
@@ -454,7 +454,7 @@ export default {
       wx.request({
         url: api.getURL("posts/projectAround"),
         data: {
-          id: detail.id,
+          coverId: detail.coverId,
           district: detail.cityDistrict,
           lat: detail.latitude,
           longi: detail.longitude

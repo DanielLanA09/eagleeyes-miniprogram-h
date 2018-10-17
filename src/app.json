@@ -1,10 +1,10 @@
 {
   "pages": [
-    "pages/favorite/main",
+    "pages/compare/main",
     "pages/home/main",
-    
+
+    "pages/favorite/main",
     "pages/mine/main",
-    
     "pages/filter/main",
     "pages/counter/main",
     "pages/preface/main",
@@ -13,7 +13,6 @@
     "pages/map/main",
     "pages/notice/main",
     "pages/advice/main"
-    
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -30,6 +29,10 @@
       {
         "text":"筛选",
         "pagePath":"pages/filter/main"
+      },
+      {
+        "text":"对比",
+        "pagePath":"pages/compare/main"
       },
       {
         "text":"我的",
