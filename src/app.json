@@ -1,8 +1,8 @@
 {
   "pages": [
-    "pages/compare/main",
     "pages/home/main",
-
+    "pages/compare/main",
+    "pages/compareResult/main",
     "pages/favorite/main",
     "pages/mine/main",
     "pages/filter/main",

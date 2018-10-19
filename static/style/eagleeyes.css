@@ -138,3 +138,8 @@
     box-shadow: 0 0 5rpx 5rpx rgba(145, 161, 189, 0.5);
     font-weight: 500;
   }
+  .eagle-card{
+    box-shadow: 0 0 5rpx 5rpx #e5e9ef;
+    border-radius: 25rpx;
+    margin: 4px 8px;
+  }

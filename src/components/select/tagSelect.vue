@@ -10,7 +10,7 @@
             <notation :list="tags" @onChange="onSelected"></notation>
         </div>
         <!-- MASK -->
-        <div class="mask" v-if="optionsVisible"></div>
+        <div class="mask" v-if="optionsVisible" @click="showOption"></div>
     </div>
 </template>
 

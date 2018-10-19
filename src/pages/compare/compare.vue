@@ -2,7 +2,7 @@
     <div>
         <!-- SEARCH TITLE -->
         <div class="input-block">
-            <input type="text" placeholder="搜索您想找的小区、楼盘、地点" placeholder-style="font-size:14px;" class="input">
+            <input type="text" placeholder="搜索您想找的小区、楼盘、地点" placeholder-style="font-size:14px;" class="input" v-model="title" @bindconfirm="request">
         </div>
         <!-- FILTER TITLE -->
         <div class="title">
@@ -140,22 +140,39 @@ export default {
       this.selectedList.splice(k, 1);
     },
     onCompare(){
-
+      this.$store.commit("SET_COMPARE_ITEMS",this.selectedList);
+      wx.navigateTo({
+        url:"/pages/compareResult/main"
+      })
     },
     onTagSelected(e){
-      this.tagStr = e.join(',');
+      // console.log(e);
+      let tags = [];
+      e.forEach(i=>{
+        tags.push(i.value)
+      })
+      this.tagStr = tags.join(',');
+      this.request();
     },
     onDistrictSelected(e){
       this.district = e;
+      this.request();
     },
     onPriceSelected(e){
       this.price = e;
+      this.request();
     }
   }
 };
 </script>
 
 <style scoped lang="less">
+.selected{
+  position: sticky;
+  top:2px;
+  z-index: 19;
+  background: white;
+}
 .title {
   display: flex;
   justify-content: space-around;

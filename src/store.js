@@ -8,7 +8,8 @@ export default new Vuex.Store({
       BASE_HOST:null,
       DEVISIONS:null,
       CURRENT_DEVISION:null,
-      CURRENT_COVER:null
+      CURRENT_COVER:null,
+      COMPARE_ITEMS:null
     },
     mutations: {
       SET_USER(state,user){
@@ -35,7 +36,11 @@ export default new Vuex.Store({
         console.log('STORING DEVS...');
         state.DEVISIONS = devs;
         console.log('STORED DEVISIONS ARE:',state.DEVISIONS);
-        
+      },
+      SET_COMPARE_ITEMS(state,items){
+        console.log("STORING ITEMS...");
+        state.COMPARE_ITEMS = items;
+        console.log('STORED COMPARE ITEMS ARE:',state.COMPARE_ITEMS);
       }
     },
     actions: {
