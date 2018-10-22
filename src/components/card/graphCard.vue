@@ -106,28 +106,9 @@ export default {
           me.info.address
       });
     },
-    drawCircle(ctx) {
-      let r = this.info.mark * 2 / 100;
-      ctx.beginPath();
-      ctx.arc(25, 25, 20, 0, r * Math.PI);
-      ctx.lineWidth = 5;
-      ctx.setStrokeStyle("#4ad9b7");
-      ctx.stroke();
-
-      ctx.setFontSize(13);
-      const length = ctx.measureText(this.info.mark);
-      ctx.fillText(this.info.mark, 25 - Number(length.width) / 2, 25 + 5);
-      ctx.draw(true);
-    },
     onClick() {
       this.$emit("onClick",this.info);
     }
-  },
-  mounted() {
-    let ctx = wx.createCanvasContext("mark1");
-    setTimeout(() => {
-      this.drawCircle(ctx);
-    }, 200);
   }
 };
 </script>

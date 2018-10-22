@@ -66,9 +66,13 @@
             <title :title="m.mName"></title>
           </div>
         </div>
-        <div class="subtab-post">
+        <div class="subtab-post" v-if="m.branch==0">
           <p><span @click="showMessage(c)" v-for="(c,ck) in m.content" :key="ck"
           :class="{'text-explain': c.type === 'explain', 'text-bold': c.type === 'bold','text-transport':c.type === 'transport'}" >{{c.content}}</span></p>
+        </div>
+        <div class="subtab-post" v-if="m.branch==1">
+          <p class="subtab-img-desc" v-for="(c,ck) in m.content" :key="ck"><span v-for="(sc,sck) in c.content" :key="sck" 
+          :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}">{{sc.content}}</span></p>
         </div>
         <div class="tips e-center">
           <span><button @click="goDetail">点击查看详情 ></button></span>
@@ -655,25 +659,9 @@ export default {
     padding: 0 34rpx;
     line-height: 60rpx;
     margin-top: 20rpx;
+
     .subtab-img-desc {
-      display: flex;
-      position: relative;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgb(245, 245, 245);
-      font-size: 22rpx;
-      color: rgb(153, 153, 153);
-      padding: 17rpx;
-      margin: 50rpx 0;
-      img {
-        width: 654rpx;
-        height: 444rpx;
-      }
-      span {
-        position: relative;
-        top: 8rpx;
-      }
+      margin-top: 15px;
     }
   }
 

@@ -63,9 +63,13 @@ export default {
     setMark() {
       return (this.info.mark / 10).toFixed(1);
     },
-    setImg(){
-      let imgs = this.info.img.split("|");
-      return this.$store.state.BASE_HOST+imgs[0]
+    setImg() {
+      if (this.info.img) {
+        let imgs = this.info.img.split("|");
+        return this.$store.state.BASE_HOST + imgs[0];
+      }else{
+        return "";
+      }
     }
   },
   watch: {
@@ -95,31 +99,14 @@ export default {
           me.info.place
       });
     },
-    drawCircle(ctx) {
-      let r = this.info.mark * 2 / 100;
-      ctx.beginPath();
-      ctx.arc(25, 25, 20, 0, r * Math.PI);
-      ctx.lineWidth = 5;
-      ctx.setStrokeStyle("#4ad9b7");
-      ctx.stroke();
-
-      ctx.setFontSize(13);
-      const length = ctx.measureText(this.info.mark);
-      ctx.fillText(this.info.mark, 25 - Number(length.width) / 2, 25 + 5);
-      ctx.draw(true);
-    },
     goView() {
-      // api.saveAccessHistory(this.$store.state.USER_INFO, "综合页面", 2, this.info.title);
-      wx.navigateTo({
-        url: "/pages/preface/main?id=" + this.info.id+"&title="+this.info.title
-      });
+      // // api.saveAccessHistory(this.$store.state.USER_INFO, "综合页面", 2, this.info.title);
+      // wx.navigateTo({
+      //   url:
+      //     "/pages/preface/main?id=" + this.info.id + "&title=" + this.info.title
+      // });
+      this.$emit("onClick",this.info);
     }
-  },
-  mounted() {
-    let ctx = wx.createCanvasContext("mark1");
-    setTimeout(() => {
-      this.drawCircle(ctx);
-    }, 200);
   }
 };
 </script>
@@ -166,7 +153,7 @@ export default {
         }
       }
       .footer {
-        margin:10px 0;
+        margin: 10px 0;
         display: flex;
         align-items: stretch;
         justify-content: space-between;

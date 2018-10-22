@@ -27,14 +27,14 @@
             <div class="h-padding-34 recommend">
               <div style="font-size:36rpx;">推荐楼盘</div>
               <div v-for="(r,k) in recommenList" :key="k">
-                <g-card :info="r"></g-card>
+                <g-card :info="r" @onClick="goView"></g-card>
               </div>
             </div>
           </div>
           <!-- 当搜索有结果时 -->
           <div class="h-padding-34 search-result" v-if="showResult">
             <div v-for="(r,k) in searchList" :key="k">
-              <g-card :info="r"></g-card>
+              <g-card :info="r" @onClick="goView"></g-card>
             </div>
           </div>
         </div>
@@ -152,6 +152,12 @@ export default {
       wx.pageScrollTo({
         scrollTop: 0,
         duration: 1000
+      });
+    },
+    goView(e){
+      this.$store.commit('SET_CURRENT_COVER',e);
+      wx.navigateTo({
+        url: '/pages/preface/main'
       });
     },
     deleteKeyword(){

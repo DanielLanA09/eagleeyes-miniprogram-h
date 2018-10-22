@@ -1,11 +1,11 @@
 import store from "@/store.js"
 
-// const base = 'http://192.168.31.252:30080';
-const base = "http://localhost:8091" //local
+const base = 'http://192.168.31.252:30080';
+// const base = "http://localhost:8091" //local
 // const base = "http://192.168.31.13:9000" //local
 
-const host = base;
-// const host = base+'/eagleeyes-miniprogram';
+// const host = base;
+const host = base+'/EagleEyeWx-0.0.1-SNAPSHOT';
 
 
 function request(method, url, data, callback, complete) {
@@ -37,7 +37,7 @@ function request(method, url, data, callback, complete) {
 }
 
 export default {
-    BASE_HOST: base + '/eagleeyes-miniprogram/api/file/downloadFile/',
+    BASE_HOST: base + '/EagleEyeWx-0.0.1-SNAPSHOT/api/file/downloadFile/',
     getUserInfo(callback) {
         console.log("GETTING USER INFO...");
         wx.getUserInfo({
