@@ -1,11 +1,11 @@
 {
   "pages": [
     "pages/home/main",
+    "pages/favorite/main",
+    "pages/filter/main",
     "pages/compare/main",
     "pages/compareResult/main",
-    "pages/favorite/main",
     "pages/mine/main",
-    "pages/filter/main",
     "pages/counter/main",
     "pages/preface/main",
     "pages/analysis/main",

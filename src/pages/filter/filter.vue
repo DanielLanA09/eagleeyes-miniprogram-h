@@ -32,7 +32,7 @@
         </div>
         <div v-if="personalVisisble">
           <div class="tips" v-if="questionVisible">
-            如果您还不知道自己适合居住什么样的小区，那就开始个性化测评吧~(1/5)
+            如果您还不知道自己适合居住什么样的小区，那就开始个性化测评吧~
           </div>
           <question-card :questions="questions" @onComplete="onQuetionComplete" v-if="questionVisible"></question-card>
           <div v-if="!questionVisible">

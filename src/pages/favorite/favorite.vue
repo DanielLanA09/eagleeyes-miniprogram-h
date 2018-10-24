@@ -3,6 +3,10 @@
       <div class="card-list">
         <card v-for="(favo,fk) in favoriteList" :key="fk" :info="favo" @onClick="onSelect" :checked="favo.checked" :edit="edit"></card>
       </div>
+      <div class="recommend" v-if="!favoriteList">
+        <div class="title"><img :src="favoriteTitle"></div>
+        <div class="button" @click="goHome">现在去瞅瞅</div>
+      </div>
       <div class="change" @click="onEdit" v-if="!edit">
         <div class="e-center content">
             <i class="iconfont icon-shanchu-"></i>
@@ -31,10 +35,11 @@ export default {
   },
   data: () => {
     return {
-      favoriteList: [],
+      favoriteList: null,
       selectedList: new Set(),
       checked: false,
-      edit: false
+      edit: false,
+      favoriteTitle: require("../../../static/imgs/favorite-null.png")
     };
   },
   onLoad() {
@@ -48,7 +53,9 @@ export default {
                 i.checked = false;
               });
             }
-
+            if (!that.favoriteList) {
+              that.favoriteList = [];
+            }
             that.favoriteList = favoRes.data.covers;
           }
         });
@@ -58,10 +65,10 @@ export default {
   methods: {
     onSelect(e) {
       if (!this.edit) {
-        this.$store.commit('SET_CURRENT_COVER',e);
+        this.$store.commit("SET_CURRENT_COVER", e);
         wx.navigateTo({
-          url:"/pages/preface/main"
-        })
+          url: "/pages/preface/main"
+        });
       } else {
         if (e.checked) {
           this.selectedList.add(e);
@@ -74,6 +81,13 @@ export default {
           this.checked = false;
         }
       }
+    },
+    goHome(){
+      console.log('sdfdf');
+      
+      wx.navigateTo({
+        url:"/pages/home/main"
+      });
     },
     onDelete() {
       let that = this;
@@ -125,6 +139,31 @@ export default {
 }
 .card-list {
   height: 90%;
+}
+.recommend {
+  height: 100vh;
+  margin-top: 100px;
+
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+    img {
+      width: 148px;
+      height: 121px;
+    }
+  }
+  .button {
+    width: 174px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 16px;
+    color: rgb(74, 217, 183);
+    box-shadow: 0 0 1px 1px rgb(74, 217, 183);
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 .footer {
   position: fixed;
