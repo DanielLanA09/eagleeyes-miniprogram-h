@@ -2,7 +2,7 @@
     <div class="a-container">
        <div class="a-body">
           <div class="s-container">
-            <div class="s-hidden-nav" v-if="blockNavShow">
+            <div class="s-hidden-nav" v-if="blockNavShow" @click="blockNavShow=false">
                 <div class="s-hidden-title">
                     <span >全部介绍</span>
                     <span @click="blockNavShow=!blockNavShow"><icon class="iconfont icon-xiaotubiao_fuzhi-28" style="font-size:50rpx;"></icon></span>
@@ -37,10 +37,9 @@
                     <!-- TITLE AND IMGS -->
                     <div class="analysis-title" >
                       <!-- <a-title :imgUrl="host+iconMap[current_devision.devName]" :des="current_devision.devName"></a-title> -->
-                      <a-title :imgUrl="current_devision.icon2" :des="current_devision.devName"></a-title>
+                      <a-title :imgUrl="current_devision.icon2" :des="current_devision.devDes"></a-title>
                       <div class="imgCover">
-                        <img :src="host+markUrl[current_devision.devName]">
-                        
+                        <img :src="markUrl[current_devision.devName]">
                       </div>
                     </div>
                     <!-- ADVANTAGE -->
@@ -90,9 +89,11 @@
                         <div class="subtab-post" v-for="(c,ck) in m.content" :key="ck">
                             <p><span v-for="(sc,sck) in c.content" :key="sck" :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}" 
                                 @click="showMessage(c)">{{sc.content}}</span></p>
-                            <div class="subtab-img-desc" v-if="c.img[ck]">
-                                <img :src="c.img[ck]">
-                                <span>{{c.imgNames[ck]}}</span>
+                            
+                            <div class="subtab-img-desc" v-if="img" v-for="(img,img_key) in c.img" :key="img_key">
+                              <!-- FIXME: CHANGE THIS ABSOLUTE ROUTE. -->
+                                <img :src="'https://www.eagleshing.com/eagleeyes-mini-3.0/api/file/downloadFile/'+img">
+                                <span>{{c.imgNames[img_key]}}</span>
                             </div>
                         </div>
                       </div>
@@ -102,7 +103,7 @@
                     </div>
                     <div class="nav-des">
                       <div class="hr"></div>
-                      <div class="content">{{devDes}}</div>
+                      <div class="content">{{current_devision.footerDes}}</div>
                     </div>
                   </div>
                 </div>
@@ -148,7 +149,6 @@ export default {
       list: [],
       num: 0
     },
-    host: "",
     iconMap: {
       楼房布局: `${HOST_URL}/icon/ic_details_structure1@2x.png`,
       交通: `${HOST_URL}/icon/ic_details_bus@2x.png`,
@@ -167,20 +167,20 @@ export default {
       周边环境: `${HOST_URL}/icon/ic_details_env@2x.png`
     },
     markUrl: {
-      楼房布局: `${HOST_URL}/Mark/楼房布局.png`,
-      交通: `${HOST_URL}/Mark/交通.png`,
-      小区绿化: `${HOST_URL}/Mark/小区绿化.png`,
-      学校: `${HOST_URL}/Mark/学校.png`,
-      车位配套: `${HOST_URL}/Mark/车位配套.png`,
-      生活娱乐: `${HOST_URL}/Mark/生活娱乐.png`,
-      医疗: `${HOST_URL}/Mark/医疗.png`,
-      文化体育: `${HOST_URL}/Mark/文化体育.png`,
-      菜场: `${HOST_URL}/Mark/菜场.png`,
-      商务办公: `${HOST_URL}/Mark/商务办公.png`,
-      政府机构: `${HOST_URL}/Mark/政府机构.png`,
-      小区配套: `${HOST_URL}/Mark/小区配套.png`,
-      污染: `${HOST_URL}/Mark/污染.png`,
-      周边环境: `${HOST_URL}/Mark/周边环境.png`
+      楼房布局: `${HOST_URL}楼房信息.png`,
+      交通: `${HOST_URL}交通.png`,
+      小区绿化: `${HOST_URL}绿化保洁.png`,
+      学校: `${HOST_URL}学校.png`,
+      车位配套: `${HOST_URL}车位情况.png`,
+      生活娱乐: `${HOST_URL}生活娱乐.png`,
+      医疗: `${HOST_URL}医疗.png`,
+      文化体育: `${HOST_URL}文化体育.png`,
+      菜场: `${HOST_URL}蔬菜.png`,
+      商务办公: `${HOST_URL}商务办公.png`,
+      政府机构: `${HOST_URL}政府机构.png`,
+      小区配套: `${HOST_URL}内部配套.png`,
+      污染: `${HOST_URL}污染.png`,
+      周边环境: `${HOST_URL}周边环境.png`
     },
     NavDes: {
       楼房布局: "快去看看小区里面的环境吧~左滑进入“小区绿化”",
@@ -202,7 +202,7 @@ export default {
     startY: 0,
     endX: 0,
     endY: 0,
-    
+
     devisions: [],
     cAdvantages: [],
     cDisadvantages: [],
@@ -235,12 +235,16 @@ export default {
     //FIXME:FETCH USER INFOR
 
     this.devisions = this.$store.state.DEVISIONS;
+    let cover = this.$store.state.CURRENT_COVER;
     if (this.$store.state.CURRENT_DEVISION) {
       this.current_devision = this.$store.state.CURRENT_DEVISION;
     } else {
       this.current_devision = this.devisions[0];
     }
     this.current_cover = this.$store.state.CURRENT_COVER;
+    wx.setNavigationBarTitle({
+      title: cover.title
+    });
   },
   mounted() {
     this.requestDev();
@@ -338,7 +342,8 @@ export default {
             );
           }
           //SET OTHER CONTENT
-          let temModules = res.data.filter(i => i.branch != "2");
+          let temModules = res.data.filter(i => i.branch != "2").sort((a,b)=>a.mId-b.mId);
+
           this.cModules = temModules;
         }
       });
@@ -427,7 +432,7 @@ export default {
       this.onNavClick(temDev, nextDev);
     },
     onNavClick(dev, key) {
-      this.blockNavShow = false
+      this.blockNavShow = false;
       this.current_devision = dev;
       this.requestParamsAndModules(this.current_cover, this.current_devision);
     },

@@ -1,7 +1,7 @@
 import store from "@/store.js"
 
-// const base = 'http://192.168.31.252:30080';
 // const base = "http://localhost:8091" //local
+// const base = 'http://192.168.31.252:30080';
 const base = "https://www.eagleshing.com"
 
 // const host = base;
@@ -78,6 +78,10 @@ export default {
     findByDistrictAndPriceAndTag(data, callback) {
         console.log('FINDING COVERS BY DISTRICT,PRICE AND TAGS...');
         request('GET', '/post/findbydistrictandpriceandtag', data, callback)
+    },
+    findByDistrictAndPriceAndTitle(data,callback){
+        console.log("FINDING COVERS BY TITLE, PRICE AND DISTRICT...")
+        request("GET","/post/findbydistrictandprice",data,callback)
     },
     findDevisionAndParams(id, type, callback) {
         console.log('FINDING DEVISION PARAMS BY COVER ID AND DEVISION TYPE...');
@@ -162,7 +166,7 @@ export default {
         request("POST", "/user/collect", data, callback);
     },
     removeFavorite(data, callback) {
-        request("POST", '/user/deletecollection', data, callback);
+        request("POST", '/user/deletecollect', data, callback);
     },
     removeFavorites(data, callback) {
         request("POST", '/user/deletecollections', data, callback);

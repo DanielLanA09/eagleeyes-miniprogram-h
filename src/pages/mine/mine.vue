@@ -2,7 +2,7 @@
     <div>
         <div class="profile-back">
             <div class="back">
-              <img :src="backImg" alt="">
+              <img src="https://www.eagleshing.com/eagleeyes-mini-3.0/api/file/downloadFile/profile-back.png">
             </div>
             <div class="profile" @click="login">
                 <img class="profile-icon" :src="user.icon">

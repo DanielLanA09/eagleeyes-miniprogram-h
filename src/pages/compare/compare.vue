@@ -88,10 +88,11 @@ export default {
       }
     ],
     price: [0, 100000],
-    tagStr: "房型丰富",
+    tagStr: "",
     district: "520115",
     title: "",
-    size: 20,
+    size: 6,
+    pageEnd:false,
     page: 0,
     selectedList: [],
     availList: []
@@ -99,27 +100,43 @@ export default {
   onLoad() {
     this.request();
   },
+  onReachBottom(){
+    this.request();
+  },
   methods: {
     request() {
+      if(this.pageEnd){
+        return;
+      }
+      this.page++;
       api.findByDistrictAndPriceAndTag(
         {
           minprice: this.price[0],
           maxprice: this.price[1],
           district: this.district,
           tags: this.tagStr,
-          page: this.page,
+          page: this.page*this.size,
           size: this.size,
           title: this.title
         },
         res => {
           if (res.success) {
-            this.availList = res.data;
+            if(res.data.length==0){
+              this.pageEnd=true;
+            }
+            this.availList = this.availList.concat(res.data);
           }
         }
       );
     },
     onTitleConfirm(){
+      this.reSetPage();
       this.request();
+    },
+    reSetPage(){
+      this.availList=[];
+      this.pageEnd=false;
+      this.page=-1;
     },
     onSelect(k) {
       if (this.selectedList.length >= 2) {
@@ -143,6 +160,16 @@ export default {
       this.selectedList.splice(k, 1);
     },
     onCompare(){
+      if(this.selectedList.length<2){
+        wx.showModal({
+          title: "提示",
+          content: "请选择两个要比较的小区",
+          showCancel: false,
+          confirmText: "知道了",
+          confirmColor: "#32bb8f"
+        });
+        return;
+      }
       this.$store.commit("SET_COMPARE_ITEMS",this.selectedList);
       wx.navigateTo({
         url:"/pages/compareResult/main"
@@ -150,6 +177,7 @@ export default {
     },
     onTagSelected(e){
       // console.log(e);
+      this.reSetPage();
       let tags = [];
       e.forEach(i=>{
         tags.push(i.value)
@@ -158,11 +186,13 @@ export default {
       this.request();
     },
     onDistrictSelected(e){
-      this.district = e;
+      this.district = e.value;
+      this.reSetPage();
       this.request();
     },
     onPriceSelected(e){
-      this.price = e;
+      this.price = e.value.split(',');
+      this.reSetPage();
       this.request();
     }
   }

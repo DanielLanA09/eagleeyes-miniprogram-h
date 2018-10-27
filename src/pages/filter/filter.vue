@@ -21,7 +21,7 @@
           </div>
           <div class="result gap">
               <div v-for="(i,k) in cardList" :key="k">
-                  <card :info=i></card>
+                  <card :info=i @onClick="goView"></card>
               </div>
           </div>
           <div class="change" @click="fresh">
@@ -41,7 +41,7 @@
               <div class="eagle-button" @click="onResetQuestion">重置问题</div>
             </div>
             <div class="recommenList">
-              <card :info=i v-for="(i,k) in recommendList" :key="k"></card>
+              <card :info=i v-for="(i,k) in recommendList" :key="k" @onClick="goView"></card>
             </div>
           </div>
         </div>
@@ -190,19 +190,26 @@ export default {
     price: ["0", "20000"],
     tagStr: "",
     cpage: -1,
+    pageEnd: false,
     questions: [],
     personalVisisble: false,
     questionVisible: true
   }),
   onLoad() {},
   methods: {
+    goView(e){
+      this.$store.commit('SET_CURRENT_COVER',e);
+      wx.navigateTo({
+        url: '/pages/preface/main'
+      });
+    },
     tabChange(e) {
       this.personalVisisble = e;
       if (this.personalVisisble) {
         this.questionVisible = true;
       }
     },
-    onResetQuestion(){
+    onResetQuestion() {
       this.questionVisible = true;
     },
     fresh() {
@@ -238,17 +245,14 @@ export default {
       let length = tagStr.length;
       tagStr = tagStr.slice(0, length - 1);
       this.tagStr = tagStr;
+      this.pageEnd = false;
       this.cpage = -1;
+      this.cardList = [];
       this.queyResult();
     },
     queyResult() {
-      if (this.cpage == -2) {
-        //页面已经到最后一页，不再继续请求数据
-        // return;
-      }
-      if (this.cpage == -1) {
-        //页面重置了
-        this.cardList = [];
+      if (this.pageEnd) {
+        return;
       }
       this.cpage++;
       api.findByDistrictAndPriceAndTag(
@@ -257,31 +261,37 @@ export default {
           minprice: this.price[0],
           maxprice: this.price[1],
           tags: this.tagStr,
-          page: this.cpage,
+          page: this.cpage * 5,
           size: 5,
-          title:""
+          title: ""
         },
         res => {
           if (res.success) {
             if (res.data.length == 0) {
-              this.cpage = -2;
-              this.showNull = true;
-            } else {
-              this.showNull = false;
+              this.pageEnd = true;
             }
             this.cardList = this.cardList.concat(res.data);
+            if (this.cardList.length > 0) {
+              this.showNull = false;
+            } else {
+              this.showNull = true;
+            }
           }
         }
       );
     },
     onDistrictSelect(e) {
       this.district = e.value;
+      this.cardList = [];
+      this.pageEnd = false;
       this.cpage = -1;
       this.queyResult();
     },
     onPriceSelect(e) {
       this.price = e.value.split(",");
+      this.pageEnd = false;
       this.cpage = -1;
+      this.cardList = [];
       this.queyResult();
     },
     onQuetionComplete(tags) {
@@ -291,13 +301,8 @@ export default {
       this.recommendRequest();
     },
     recommendRequest() {
-      if (this.cpage == -2) {
-        //页面已经到最后一页，不再继续请求数据
-        // return;
-      }
-      if (this.cpage == -1) {
-        //页面重置了
-        this.cardList = [];
+      if (this.pageEnd) {
+        return;
       }
       this.cpage++;
       api.findByDistrictAndPriceAndTag(
@@ -312,8 +317,8 @@ export default {
         },
         res => {
           if (res.success) {
-            if(res.data.length==0){
-              this.cpage = -2;
+            if (res.data.length == 0) {
+              this.pageEnd = true;
             }
             this.recommendList = res.data;
           }
@@ -326,17 +331,20 @@ export default {
     api.findQuestions(res => {
       if (res.success) {
         res.data.sort((a, b) => a.id - b.id);
+        res.data.map(q=>{
+          q.options.sort((a,b)=>a.optionId-b.optionId)
+        });
+        res.data.sort((a,b)=>a.id-b.id);
         this.questions = res.data;
       }
     });
   },
   onReachBottom() {
     if (this.personalVisisble) {
-      this.recommendRequest()
-    }else{
+      this.recommendRequest();
+    } else {
       this.queyResult();
     }
-    
   },
   onShareAppMessage: function(option) {
     if (option.from === "button") {

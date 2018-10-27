@@ -7,7 +7,6 @@
           <span>{{i.devName}} <icon class="iconfont" :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']" style="font-size:12px;" ></icon></span>
         </div>
       </div>
-      
     </div>
 </template>
 
@@ -72,6 +71,10 @@ export default {
           color: "#5ad2b5"
         }
       ]
+    },
+    coverId:{
+      type:Number,
+      default:0
     }
   },
   data: () => ({
@@ -84,7 +87,8 @@ export default {
       mRadius: 0, //半径(减去的值用于给绘制的文本留空间)
       mAngle: 0, //角度
       mr: 0, //平均半径差
-      mColorPolygon: ""
+      mColorPolygon: "",
+      coverId: 0
     },
     ctx: {}
   }),
@@ -103,21 +107,20 @@ export default {
       me.mCount = this.mData.length;
       me.mCenter = me.mW / 2;
       me.mRadius = me.mCenter - 30;
-      me.mAngle = (Math.PI * 2) / me.mCount;
+      me.mAngle = Math.PI * 2 / me.mCount;
       me.mr = me.mRadius / 5;
 
-      let ctx = wx.createCanvasContext("radar")
+      let ctx = wx.createCanvasContext("radar");
 
       this.drawPolygon(ctx);
       this.drawLines(ctx);
       this.drawRegion(ctx);
       this.setText(ctx);
-      
     },
     drawPolygon(ctx) {
       let me = this.graph;
       ctx.save();
-      
+
       ctx.setStrokeStyle("#4ad9b7");
       let r = me.mr; //单位半径
       //画6个圈
@@ -156,44 +159,22 @@ export default {
       for (var i = 0; i < me.mCount; i++) {
         let x =
           me.mCenter +
-          (me.mRadius * Math.cos(me.mAngle * i) * this.mData[i].mark) / 100;
+          me.mRadius * Math.cos(me.mAngle * i) * this.mData[i].mark / 100;
         let y =
           me.mCenter +
-          (me.mRadius * Math.sin(me.mAngle * i) * this.mData[i].mark) / 100;
+          me.mRadius * Math.sin(me.mAngle * i) * this.mData[i].mark / 100;
         ctx.lineTo(x, y);
       }
       ctx.closePath();
       ctx.fill();
       ctx.draw(true);
     },
-    // drawText(ctx) {
-    //   let me = this.graph;
-    //   let style = this.mstyle;
-    //   ctx.save;
-    //   ctx.setFontSize(style.fontsize);
-    //   for (var i = 0; i < me.mCount; i++) {
-    //     let currAng = me.mAngle * i; //current angle
-    //     let mr = Math.PI * 2 / 4; //meta region of coordinate
-    //     let x = me.mCenter + (me.mRadius - 15) * Math.cos(currAng);
-    //     let y = me.mCenter + (me.mRadius - 15) * Math.sin(currAng);
-    //     if (currAng < mr) {
-    //       ctx.fillText(this.mData[i].name, x, y + 10);
-    //     } else if ((currAng > mr) & (currAng <= 2 * mr)) {
-    //       ctx.fillText(this.mData[i].name, x - 20, y + style.fontsize);
-    //     } else if ((currAng > 2 * mr) & (currAng < 3 * mr)) {
-    //       ctx.fillText(this.mData[i].name, x - 20, y);
-    //     } else {
-    //       ctx.fillText(this.mData[i].name, x, y);
-    //     }
-    //   }
-    //   ctx.draw(true);
-    // },
     setText(ctx) {
       let me = this.graph;
       let style = this.mstyle;
       for (var i = 0; i < me.mCount; i++) {
         let currAng = me.mAngle * i; //current angle
-        let mr = (Math.PI * 2) / 4; //meta region of coordinate
+        let mr = Math.PI * 2 / 4; //meta region of coordinate
         let x = me.mCenter + me.mRadius * Math.cos(currAng);
         let y = me.mCenter + me.mRadius * Math.sin(currAng);
         let textLength = ctx.measureText(this.mData[i].devName).width + 25;
@@ -220,10 +201,10 @@ export default {
       for (var i = 0; i < me.mCount; i++) {
         let x =
           me.mCenter +
-          (me.mRadius * Math.cos(me.mAngle * i) * this.mData[i][1]) / 100;
+          me.mRadius * Math.cos(me.mAngle * i) * this.mData[i][1] / 100;
         let y =
           me.mCenter +
-          (me.mRadius * Math.sin(me.mAngle * i) * this.mData[i][1]) / 100;
+          me.mRadius * Math.sin(me.mAngle * i) * this.mData[i][1] / 100;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.setFillStyle("rgba(255, 0, 0, 0.8)");
@@ -233,17 +214,12 @@ export default {
       ctx.restore();
     }
   },
-  created() {},
+  created() {
+    this.initialize();
+  },
   mounted() {
-    this.ctx = wx.createCanvasContext("radar");
-    // let ctx1 = wx.createCanvasContext("radar");
-    // setTimeout(() => {
-    //   this.initialize();
-    //   this.drawPolygon(ctx1);
-    //   this.drawLines(ctx1);
-    //   this.drawRegion(ctx1);
-    //   this.setText(ctx1);
-    // }, 800);
+    // this.ctx = wx.createCanvasContext("radar");
+    this.initialize();
   }
 };
 </script>

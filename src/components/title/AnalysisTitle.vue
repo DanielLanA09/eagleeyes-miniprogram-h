@@ -5,7 +5,7 @@
             <i class="iconfont" :class="[imgUrl]"></i>
         </div>
         <div class="description" >
-            {{setDes}}
+            {{des}}
         </div>
     </div>
 </template>

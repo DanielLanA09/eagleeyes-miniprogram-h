@@ -75,8 +75,12 @@ export default {
       return (this.info.mark / 10).toFixed(1);
     },
     setImg(){
-      let imgs = this.info.img.split("|");
-      return this.$store.state.BASE_HOST+imgs[0]
+      if (this.info.img) {
+        let imgs = this.info.img.split("|");
+        return this.$store.state.BASE_HOST + imgs[0];
+      }else{
+        return "";
+      }
     }
   },
   watch: {

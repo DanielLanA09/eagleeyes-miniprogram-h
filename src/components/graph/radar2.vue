@@ -206,7 +206,8 @@ export default {
   },
   created() {},
   mounted() {
-    this.ctx = wx.createCanvasContext("radar1");
+    // this.ctx = wx.createCanvasContext("radar1");
+    this.initialize();
   }
 };
 </script>

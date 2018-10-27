@@ -20,6 +20,9 @@ export default {
   components: {
     notation
   },
+  props:{
+    
+  },
   data: () => ({
     tags: [
       {

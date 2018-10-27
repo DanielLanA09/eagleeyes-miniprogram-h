@@ -1,12 +1,11 @@
 <template>
-    <div class="select-back" >
+    <div class="select-back" @blur="selectShow=false">
         <div class="select-name h-left select-input" :style="{justifyContent:align}" @click="selectShow = !selectShow">
             <span class="select-content">{{selected}}</span>
             <i class="iconfont icon-xiaotubiao_fuzhi-27"></i>
         </div>
         <div class="select-item" :style="{left:left}" v-if="selectShow">
             <div v-for="(i,k) in list" :key="k" @click="onSelect(i)" class="item-block">{{i.name}}</div>
-            
         </div>
         <div class="mask" v-if="selectShow" @click="onCancel"></div>
     </div>

@@ -41,7 +41,16 @@
           <title :title="'周边配套'"></title>
         </div>
         <div class="body e-center">
-          <pgraph1 ref="radar1" :coverId="coverId" :start="gStart" :mstyle=gStyle :mData="outerList" @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph1>
+          <!-- <pgraph1 ref="radar1" :start="gStart" :mstyle=gStyle :mData="outerList"  @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph1> -->
+          <div>
+            <div class="g-container" :style="{height:mstyle1.mH+'px',width:mstyle1.mW+'px'}">
+              <canvas class="g-canvas" canvas-id="radar1" :style="{height:mstyle1.mH+'px',width:mstyle1.mW+'px'}" @click="goDetail"></canvas>
+              <div v-for="(i,k) in outerList" :key="k" class="params" style="position:absolute;" :style="{top:i.top+'px',left:i.left+'px',color:i.color}" @click="goNav(i)">
+                <!-- {{i.devName}} -->
+                <span>{{i.devName}} <icon class="iconfont" :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']" style="font-size:12px;" ></icon></span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="tips-text e-center">
           <span><span>点击上方标签，查看模块详情</span></span>
@@ -52,7 +61,16 @@
           <title :title="'小区内部'"></title>
         </div>
         <div class="body e-center">
-          <pgraph2 ref="radar2" :start="gStart" :mstyle=gStyle :mData="innerList" @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph2>
+          <!-- <pgraph2 ref="radar2" :start="gStart" :mstyle=gStyle :mData="innerList" @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph2> -->
+          <div>
+            <div class="g-container" :style="{height:mstyle2.mH+'px',width:mstyle2.mW+'px'}">
+              <canvas class="g-canvas" canvas-id="radar2" :style="{height:mstyle2.mH+'px',width:mstyle2.mW+'px'}" @click="goDetail"></canvas>
+              <div v-for="(i,k) in innerList" :key="k" class="params" style="position:absolute;" :style="{top:i.top+'px',left:i.left+'px',color:i.color}" @click="goNav(i)">
+                <!-- {{i.devName}} -->
+                <span>{{i.devName}} <icon class="iconfont" :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']" style="font-size:12px;" ></icon></span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="tips-text eagle-border-top-hr e-center">
           <span><span>点击上方标签，查看模块详情</span></span>
@@ -119,46 +137,12 @@ export default {
     }
   },
   data: () => ({
-    // navIcon: new Map([
-    //   ["综合", "icon-xiaotubiao_fuzhi-12"],
-    //   ["楼房布局", "icon-xiaotubiao_fuzhi-"],
-    //   ["小区绿化", "icon-xiaotubiao_fuzhi-6"],
-    //   ["小区配套", "icon-xiaotubiao_fuzhi-14"],
-    //   ["交通", "icon-xiaotubiao_fuzhi-9"],
-    //   ["车位配套", "icon-xiaotubiao_fuzhi-4"],
-    //   ["菜场", "icon-xiaotubiao_fuzhi-7"],
-    //   ["学校", "icon-xiaotubiao_fuzhi-5"],
-    //   ["周边环境", "icon-zhoubianhuanjing"],
-    //   ["生活娱乐", "icon-xiaotubiao_fuzhi-8"],
-    //   ["文化体育", "icon-xiaotubiao_fuzhi-13"],
-    //   ["医疗", "icon-xiaotubiao_fuzhi-11"],
-    //   ["污染", "icon-xiaotubiao_fuzhi-29"],
-    //   ["商务办公", "icon-xiaotubiao_fuzhi-10"],
-    //   ["政府机构", "icon-xiaotubiao_fuzhi-18"]
-    // ]),
-    // navImg:{
-    //   楼房布局: 'ic_details_structure1@2x.png',
-    //   交通: 'ic_details_bus@2x.png',
-    //   小区绿化: 'ic_details_green1@2x.png',
-    //   学校: 'ic_details_school@2x.png',
-    //   车位配套: 'ic_details_parking@2x.png',
-    //   生活娱乐: 'ic_details_shopping@2x.png',
-    //   医疗: 'ic_details_hospital@2x.png',
-    //   文化体育: 'ic_details_culture@2x.png',
-    //   菜场: 'ic_details_food@2x.png',
-    //   商务办公: 'ic_details_cbd@2x.png',
-    //   综合: 'ic_details_colligate@2x.png',
-    //   政府机构: 'ic_details_adm@2x.png',
-    //   小区配套: 'ic_details_mating1@2x.png',
-    //   污染: 'ic_details_population@2x.png',
-    //   周边环境: 'ic_details_env@2x.png'
-    // },
     gStyle: {
       mH: 250,
       mW: 250
     },
     coverurl: "",
-    favorite:false,
+    favorite: false,
     notations: [],
     contentlst1: [
       {
@@ -187,8 +171,7 @@ export default {
       开发商: "贵州保安房地产开发有限公司",
       小区地址: "贵阳市-观山湖区碧海南路2号"
     },
-    outerList: [],
-    innerList: [],
+
     gStart: false,
     postContent: [],
     modules: [],
@@ -197,21 +180,60 @@ export default {
     positionName: "",
     aroundList: [],
     pid: 0,
-    coverId: 0
+    coverId: 0,
+
+    graph1: {
+      mW: 0,
+      mH: 0,
+      mCtx: null,
+      mCount: 0, //边数
+      mCenter: 0, //中心点
+      mRadius: 0, //半径(减去的值用于给绘制的文本留空间)
+      mAngle: 0, //角度
+      mr: 0, //平均半径差
+      mColorPolygon: "",
+      coverId: 0
+    },
+    mstyle1: {
+      mW: 260, //宽
+      mH: 260 //高
+    },
+    outerList: [],
+
+    graph2: {
+      mW: 0,
+      mH: 0,
+      mCtx: null,
+      mCount: 0, //边数
+      mCenter: 0, //中心点
+      mRadius: 0, //半径(减去的值用于给绘制的文本留空间)
+      mAngle: 0, //角度
+      mr: 0, //平均半径差
+      mColorPolygon: "#B8B8B8"
+    },
+    mstyle2: {
+      mW: 260, //宽
+      mH: 260 //高
+    },
+    innerList: []
   }),
   onLoad() {
     let me = this;
     let cover = this.$store.state.CURRENT_COVER;
+    this.coverurl = api.BASE_HOST + cover.img.split("|")[1];
     this.favorite = false;
     if (this.$store.state.USER_INFO != null) {
       api.simLogin(logRes => {
         if (logRes.success) {
           this.$store.commit("SET_USER", logRes.data);
-          api.isFavorite({userId:logRes.data.userId,coverId:me.coverId},isFavoriteRes=>{
-            if(isFavoriteRes.success){
-              me.favorite = isFavoriteRes.data;
+          api.isFavorite(
+            { userId: logRes.data.userId, coverId: me.coverId },
+            isFavoriteRes => {
+              if (isFavoriteRes.success) {
+                me.favorite = isFavoriteRes.data;
+              }
             }
-          })
+          );
         }
       });
     }
@@ -230,10 +252,7 @@ export default {
       me.requestDevs(cover.coverId);
     }
   },
-  mounted() {
-    this.$refs.radar1.initialize();
-    this.$refs.radar2.initialize();
-  },
+
   onShareAppMessage: function(option) {
     let me = this;
     if (option.from === "menu") {
@@ -282,19 +301,19 @@ export default {
             }
           }
         );
-      }else{
+      } else {
         api.removeFavorite(
           {
             userId: this.$store.state.USER_INFO.userId,
             coverId: this.coverId,
             openId: this.$store.state.USER_INFO.openId
           },
-          res=>{
-            if(res.success){
+          res => {
+            if (res.success) {
               this.favorite = res.data;
             }
           }
-        )
+        );
       }
     },
     goDetail() {
@@ -378,10 +397,13 @@ export default {
             // i.icon=this.iconMap[i.devName];
             i.color = me.setColor(i.mark);
           });
-
-          this.$store.commit("SET_DEVISIONS", res.data);
+          let sortDevs = res.data.sort((a, b) => a.devSort - b.devSort);
+          this.$store.commit("SET_DEVISIONS", sortDevs);
           me.outerList = res.data.filter(i => i.devType == 1);
           me.innerList = res.data.filter(i => i.devType == 2);
+
+          me.initialize1();
+          me.initialize2();
         }
       });
 
@@ -421,7 +443,7 @@ export default {
       });
       this.$store.commit("SET_CURRENT_DEVISION", dev);
       wx.navigateTo({
-        url: "/pages/analysis/main?cId=" + p.coverId + "&devName=" + p.devName
+        url: "/pages/analysis/main"
       });
     },
     goMap() {
@@ -449,8 +471,13 @@ export default {
       });
     },
     goView(i) {
-      wx.redirectTo({
-        url: "/pages/preface/main?id=" + i.coverId
+      api.findCover(i.coverId, res => {
+        if (res.success) {
+          this.$store.commit("SET_CURRENT_COVER", res.data);
+          wx.redirectTo({
+            url: "/pages/preface/main"
+          });
+        }
       });
     },
     requestRound(detail) {
@@ -478,12 +505,114 @@ export default {
             r.data.data.length = 5;
           }
           me.aroundList = r.data.data;
-
           wx.hideLoading();
         }
       });
+    },
+    initialize1() {
+      let me = this.graph1;
+      me.mW = this.mstyle1.mW;
+      me.mH = this.mstyle1.mH;
+      me.mCount = this.outerList.length;
+      me.mCenter = me.mW / 2;
+      me.mRadius = me.mCenter - 30;
+      me.mAngle = Math.PI * 2 / me.mCount;
+      me.mr = me.mRadius / 5;
+      let ctx = wx.createCanvasContext("radar1");
+      this.drawPolygon(ctx, me);
+      this.drawLines(ctx, me);
+      this.drawRegion(ctx, me, this.outerList);
+      this.setText(ctx, me, this.outerList, this.mstyle1);
+    },
+    initialize2() {
+      let me = this.graph2;
+      me.mW = this.mstyle2.mW;
+      me.mH = this.mstyle2.mH;
+      me.mCount = this.innerList.length;
+      me.mCenter = me.mW / 2;
+      me.mRadius = me.mCenter - 30;
+      me.mAngle = Math.PI * 2 / me.mCount;
+      me.mr = me.mRadius / 5;
+      let ctx = wx.createCanvasContext("radar2");
+      this.drawPolygon(ctx, me);
+      this.drawLines(ctx, me);
+      this.drawRegion(ctx, me, this.innerList);
+      this.setText(ctx, me, this.innerList, this.mstyle2);
+    },
+    drawPolygon(ctx, graph) {
+      ctx.save();
+      ctx.setStrokeStyle("#4ad9b7");
+      let r = graph.mr; //单位半径
+      //画6个圈
+      for (var i = 0; i < 5; i++) {
+        let currR = r * (i + 1); //当前半径
+        ctx.beginPath();
+        //画6个边
+        for (var j = 0; j < graph.mCount; j++) {
+          let x = graph.mCenter + currR * Math.cos(graph.mAngle * j);
+          let y = graph.mCenter + currR * Math.sin(graph.mAngle * j);
+          ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        ctx.draw(true);
+      }
+    },
+    drawLines(ctx, graph) {
+      ctx.save();
+      ctx.beginPath();
+      for (var i = 0; i < graph.mCount; i++) {
+        let x = graph.mCenter + graph.mRadius * Math.cos(graph.mAngle * i);
+        let y = graph.mCenter + graph.mRadius * Math.sin(graph.mAngle * i);
+        ctx.moveTo(graph.mCenter, graph.mCenter);
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.draw(true);
+    },
+    drawRegion(ctx, graph, mData) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(74,217,183,0.3)";
+      for (var i = 0; i < graph.mCount; i++) {
+        let x =
+          graph.mCenter +
+          graph.mRadius * Math.cos(graph.mAngle * i) * mData[i].mark / 100;
+        let y =
+          graph.mCenter +
+          graph.mRadius * Math.sin(graph.mAngle * i) * mData[i].mark / 100;
+        ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.draw(true);
+    },
+    setText(ctx, graph, mData, mstyle) {
+      let style = mstyle;
+      for (var i = 0; i < graph.mCount; i++) {
+        let currAng = graph.mAngle * i; //current angle
+        let mr = Math.PI * 2 / 4; //meta region of coordinate
+        let x = graph.mCenter + graph.mRadius * Math.cos(currAng);
+        let y = graph.mCenter + graph.mRadius * Math.sin(currAng);
+        let textLength = ctx.measureText(mData[i].devName).width + 25;
+        let textHeight = 25;
+        if (currAng <= mr) {
+          mData[i].left = x;
+          mData[i].top = y - 10;
+        } else if ((currAng > mr) & (currAng <= 2 * mr)) {
+          mData[i].left = x - textLength;
+          mData[i].top = y - 10;
+        } else if ((currAng > 2 * mr) & (currAng <= 3 * mr)) {
+          mData[i].left = x - textLength;
+          mData[i].top = y - textHeight;
+        } else if ((currAng > 3 * mr) & (currAng <= 4 * mr)) {
+          mData[i].left = x;
+          mData[i].top = y - 25;
+        }
+      }
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 
@@ -673,6 +802,18 @@ export default {
       margin: 30rpx 34rpx;
     }
   }
+}
+
+.g-container {
+  position: relative;
+}
+.params {
+  font-size: 12px;
+  width: 65px;
+  color: rgb(50, 187, 143);
+}
+.g-canvas {
+  position: relative;
 }
 
 .text-explain {

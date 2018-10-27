@@ -44,6 +44,8 @@ export default {
   },
   onLoad() {
     let that = this;
+    that.edit = false;
+    that.checked = false;
     api.simLogin(res => {
       if (res.success) {
         api.findFavorite(res.data.openId, favoRes => {
@@ -57,6 +59,7 @@ export default {
               that.favoriteList = [];
             }
             that.favoriteList = favoRes.data.covers;
+            
           }
         });
       }
@@ -85,7 +88,7 @@ export default {
     goHome(){
       console.log('sdfdf');
       
-      wx.navigateTo({
+      wx.switchTab({
         url:"/pages/home/main"
       });
     },

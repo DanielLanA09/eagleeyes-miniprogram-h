@@ -54,8 +54,8 @@ function formatModuleContent(module) {
     let temImgContents = JSON.parse(module.jsonContent);
     for (const item of temImgContents) {
       item.content = parseText(item.content);
-      item.img = item.img.split(',');
-      item.imgNames = item.imgNames.split(',');
+      item.img = item.img.split('|');
+      item.imgNames = item.imgNames.split('|');
     }
     return temImgContents;
   } else if (module.branch == 2) {

@@ -66,7 +66,7 @@
         </div>
         <!-- CHANGE -->
         <div class="button" @click="onback">
-          <div>更换小区</div>
+          <div @click="onback">更换小区</div>
         </div>
     </div>
 </template>
@@ -91,6 +91,7 @@ export default {
         api.findAllDev(comparedItems[1].coverId, res2 => {
           if (res2.success) {
             this.devs = [];
+            res2.data = res2.data.sort((a,b)=>a.id-b.id);
             res2.data.map(i => {
               this.devs.push({
                 devName: i.devName,
@@ -111,9 +112,12 @@ export default {
   methods: {
     onback() {
       console.log("heeeee");
-      wx.navigateTo({
+      wx.switchTab({
         url: "/pages/compare/main"
       });
+    },
+    Change(){
+
     }
   }
 };
