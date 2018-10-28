@@ -3,7 +3,6 @@
         <!-- NAME -->
         <div class="name" @click="showOption">
             <span>标签</span>
-            <i class="iconfont icon-xiaotubiao_fuzhi-27"></i>
         </div>
         <!-- SELECT OPTIONS -->
         <div class="option" v-if="optionsVisible">
@@ -106,6 +105,9 @@ export default {
       },
       onSelected(e){
           this.$emit("onSelected",e);
+      },
+      onBlur(){
+        console.log("ssdf")
       }
   }
 };
@@ -125,7 +127,7 @@ export default {
   }
 }
 .option {
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   background: white;

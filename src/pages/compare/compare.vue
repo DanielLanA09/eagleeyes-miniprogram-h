@@ -7,13 +7,23 @@
         <!-- FILTER TITLE -->
         <div class="title">
             <div>
-                <m-select @onSelect="onDistrictSelected"></m-select>
+                <!-- <m-select @onSelect="onDistrictSelected"></m-select> -->
+                <picker @change="onDistrictSelected" :range="districtAvailList" range-key="name" :value="districtIndex">
+                  <div class="selector">
+                    {{districtAvailList[districtIndex].name}}
+                  </div>
+                </picker>
             </div>
             <div class="center">
-                <m-select :list="priceList" @onSelect="onPriceSelected"></m-select>
+                <t-select @onSelected="onTagSelected"></t-select>
             </div>
             <div>
-                <t-select @onSelected="onTagSelected"></t-select>
+                <!-- <m-select :list="priceList" @onSelect="onPriceSelected"></m-select> -->
+                <picker @change="onPriceSelected" :range="priceAvailList" range-key="name" :value="priceIndex">
+                  <div class="selector">
+                    {{priceAvailList[priceIndex].name}}
+                  </div>
+                </picker>
             </div>
         </div>
         <!-- COMPARE CARDS -->
@@ -45,9 +55,42 @@ export default {
     tSelect
   },
   data: () => ({
-    priceList: [
+    districtAvailList: [
       {
-        name: "价格",
+        name: "观山湖",
+        value: "520115",
+        active: true
+      },
+      {
+        name: "南明区",
+        value: "520102",
+        active: false
+      },
+      {
+        name: "云岩区",
+        value: "520103",
+        active: false
+      },
+      {
+        name: "白云区",
+        value: "520113",
+        active: false
+      },
+      {
+        name: "花溪区",
+        value: "520111",
+        active: false
+      },
+      {
+        name: "乌当区",
+        value: "520112",
+        active: false
+      }
+    ],
+    districtIndex: 0,
+    priceAvailList: [
+      {
+        name: "不限价格",
         value: "0,100000",
         active: true
       },
@@ -87,12 +130,13 @@ export default {
         active: true
       }
     ],
+    priceIndex: 0,
     price: [0, 100000],
     tagStr: "",
     district: "520115",
     title: "",
     size: 6,
-    pageEnd:false,
+    pageEnd: false,
     page: 0,
     selectedList: [],
     availList: []
@@ -100,12 +144,12 @@ export default {
   onLoad() {
     this.request();
   },
-  onReachBottom(){
+  onReachBottom() {
     this.request();
   },
   methods: {
     request() {
-      if(this.pageEnd){
+      if (this.pageEnd) {
         return;
       }
       this.page++;
@@ -115,28 +159,28 @@ export default {
           maxprice: this.price[1],
           district: this.district,
           tags: this.tagStr,
-          page: this.page*this.size,
+          page: this.page * this.size,
           size: this.size,
           title: this.title
         },
         res => {
           if (res.success) {
-            if(res.data.length==0){
-              this.pageEnd=true;
+            if (res.data.length == 0) {
+              this.pageEnd = true;
             }
             this.availList = this.availList.concat(res.data);
           }
         }
       );
     },
-    onTitleConfirm(){
+    onTitleConfirm() {
       this.reSetPage();
       this.request();
     },
-    reSetPage(){
-      this.availList=[];
-      this.pageEnd=false;
-      this.page=-1;
+    reSetPage() {
+      this.availList = [];
+      this.pageEnd = false;
+      this.page = -1;
     },
     onSelect(k) {
       if (this.selectedList.length >= 2) {
@@ -159,8 +203,8 @@ export default {
       this.availList.push(item);
       this.selectedList.splice(k, 1);
     },
-    onCompare(){
-      if(this.selectedList.length<2){
+    onCompare() {
+      if (this.selectedList.length < 2) {
         wx.showModal({
           title: "提示",
           content: "请选择两个要比较的小区",
@@ -170,28 +214,30 @@ export default {
         });
         return;
       }
-      this.$store.commit("SET_COMPARE_ITEMS",this.selectedList);
+      this.$store.commit("SET_COMPARE_ITEMS", this.selectedList);
       wx.navigateTo({
-        url:"/pages/compareResult/main"
-      })
+        url: "/pages/compareResult/main"
+      });
     },
-    onTagSelected(e){
+    onTagSelected(e) {
       // console.log(e);
       this.reSetPage();
       let tags = [];
-      e.forEach(i=>{
-        tags.push(i.value)
-      })
-      this.tagStr = tags.join(',');
+      e.forEach(i => {
+        tags.push(i.value);
+      });
+      this.tagStr = tags.join(",");
       this.request();
     },
-    onDistrictSelected(e){
-      this.district = e.value;
+    onDistrictSelected(e) {
+      this.districtIndex = e.mp.detail.value;
+      this.district = this.districtAvailList[this.districtIndex].value;
       this.reSetPage();
       this.request();
     },
-    onPriceSelected(e){
-      this.price = e.value.split(',');
+    onPriceSelected(e) {
+      this.priceIndex = e.mp.detail.value;
+      this.price = this.priceAvailList[this.priceIndex].value.split(",");
       this.reSetPage();
       this.request();
     }
@@ -200,9 +246,17 @@ export default {
 </script>
 
 <style scoped lang="less">
-.selected{
+.selector {
+  font-size: 26rpx;
+  color: #4d4d4d;
+  // font-weight: 600;
+  height: 64rpx;
+  line-height: 64rpx;
+  margin: 0;
+}
+.selected {
   position: sticky;
-  top:2px;
+  top: 2px;
   z-index: 19;
   background: white;
 }
@@ -231,10 +285,13 @@ export default {
 .center {
   border-right: 1px solid rgb(209, 209, 209);
   border-left: 1px solid rgb(209, 209, 209);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.button{
-  position:fixed;
-  right:30rpx;
+.button {
+  position: fixed;
+  right: 30rpx;
   bottom: 50px;
   border-radius: 100%;
   background: rgb(74, 217, 183);
@@ -243,7 +300,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  div{
+  div {
     font-size: 12px;
     color: white;
     width: 24px;

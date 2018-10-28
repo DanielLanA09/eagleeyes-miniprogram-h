@@ -1,9 +1,19 @@
 <template>
     <div class="explore-back">
         <div class="title gap">
-            <m-select @onSelect="onDistrictSelect" @onAbort="onAbort"></m-select>
+            <!-- <m-select @onSelect="onDistrictSelect" @onAbort="onAbort"></m-select> -->
+            <picker @change="onDistrictSelect" :range="districtAvailList" range-key="name" :value="districtIndex">
+              <div class="districtSelector">
+                {{districtAvailList[districtIndex].name}}
+              </div>
+            </picker>
             <switch-tab @onSelect="tabChange"></switch-tab>
-            <m-select :list="priceAvailList" @onSelect="onPriceSelect" :left="'-40px'"></m-select>
+            <!-- <m-select :list="priceAvailList" @onSelect="onPriceSelect" :left="'-40px'"></m-select> -->
+            <picker @change="onPriceSelect" :range="priceAvailList" range-key="name" :value="priceIndex">
+              <div class="priceSelector">
+                {{priceAvailList[priceIndex].name}}
+              </div>
+            </picker>
         </div>
         <div v-if="!personalVisisble">
           <div class="tags gap">
@@ -67,9 +77,42 @@ export default {
   data: () => ({
     searchNull: require("../../../static/imgs/search-null.png"),
     showNull: false,
+    districtAvailList: [
+      {
+        name: "观山湖",
+        value: "520115",
+        active: true
+      },
+      {
+        name: "南明区",
+        value: "520102",
+        active: false
+      },
+      {
+        name: "云岩区",
+        value: "520103",
+        active: false
+      },
+      {
+        name: "白云区",
+        value: "520113",
+        active: false
+      },
+      {
+        name: "花溪区",
+        value: "520111",
+        active: false
+      },
+      {
+        name: "乌当区",
+        value: "520112",
+        active: false
+      }
+    ],
+    districtIndex: 0,
     priceAvailList: [
       {
-        name: "价格",
+        name: "不限价格",
         value: "0,100000",
         active: true
       },
@@ -109,6 +152,7 @@ export default {
         active: true
       }
     ],
+    priceIndex: 0,
     tagOpen: true,
     notations: [
       {
@@ -197,10 +241,10 @@ export default {
   }),
   onLoad() {},
   methods: {
-    goView(e){
-      this.$store.commit('SET_CURRENT_COVER',e);
+    goView(e) {
+      this.$store.commit("SET_CURRENT_COVER", e);
       wx.navigateTo({
-        url: '/pages/preface/main'
+        url: "/pages/preface/main"
       });
     },
     tabChange(e) {
@@ -281,14 +325,16 @@ export default {
       );
     },
     onDistrictSelect(e) {
-      this.district = e.value;
+      this.districtIndex = e.mp.detail.value;
+      this.district = this.districtAvailList[this.districtIndex].value;
       this.cardList = [];
       this.pageEnd = false;
       this.cpage = -1;
       this.queyResult();
     },
     onPriceSelect(e) {
-      this.price = e.value.split(",");
+      this.priceIndex = e.mp.detail.value;
+      this.price = this.priceAvailList[this.priceIndex].value.split(",");
       this.pageEnd = false;
       this.cpage = -1;
       this.cardList = [];
@@ -331,10 +377,10 @@ export default {
     api.findQuestions(res => {
       if (res.success) {
         res.data.sort((a, b) => a.id - b.id);
-        res.data.map(q=>{
-          q.options.sort((a,b)=>a.optionId-b.optionId)
+        res.data.map(q => {
+          q.options.sort((a, b) => a.optionId - b.optionId);
         });
-        res.data.sort((a,b)=>a.id-b.id);
+        res.data.sort((a, b) => a.id - b.id);
         this.questions = res.data;
       }
     });
@@ -397,6 +443,22 @@ export default {
     padding-bottom: 8px;
     border-bottom: 1px solid #fafafa;
   }
+  .districtSelector {
+    font-size: 32rpx;
+    color: #4d4d4d;
+    font-weight: 600;
+    height: 64rpx;
+    line-height: 64rpx;
+    margin: 0;
+  }
+  .priceSelector{
+    font-size: 32rpx;
+    color: #4d4d4d;
+    font-weight: 600;
+    height: 64rpx;
+    line-height: 64rpx;
+    margin: 0;
+  }
   .tags {
     border-radius: 5px;
     border: 1px solid #fafafa;
@@ -424,7 +486,7 @@ export default {
   }
 }
 .gap {
-  margin: 0 8px;
+  margin: 0 10px;
 }
 .change {
   position: fixed;

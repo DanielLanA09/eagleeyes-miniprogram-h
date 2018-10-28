@@ -1,7 +1,14 @@
 <template>
     <div>
         <div class="h-padding-34 search-title">
-            <s-select @onSelect="onDistrictSelect" @onAbort="onAbort"></s-select>
+            <!-- <s-select @onSelect="onDistrictSelect" @onAbort="onAbort"></s-select> -->
+            <div class="selector">
+              <picker @change="onDistrictSelect" :range="districtSelectArray" range-key="name" :value="districtIndex">
+                <div class="title">
+                  {{districtSelectArray[districtIndex].name}}
+                </div>
+              </picker>
+            </div>
             <div class="search-input">
               <m-search @onFocus="onFocus"></m-search>
             </div>
@@ -65,6 +72,39 @@ export default {
   },
   data() {
     return {
+      districtSelectArray: [
+        {
+          name: "观山湖",
+          value: "520115",
+          active: true
+        },
+        {
+          name: "南明区",
+          value: "520102",
+          active: false
+        },
+        {
+          name: "云岩区",
+          value: "520103",
+          active: false
+        },
+        {
+          name: "白云区",
+          value: "520113",
+          active: false
+        },
+        {
+          name: "花溪区",
+          value: "520111",
+          active: false
+        },
+        {
+          name: "乌当区",
+          value: "520112",
+          active: false
+        }
+      ],
+      districtIndex: 0,
       currentCard: "nav7",
       cpage: 0,
       cardInfoList: [],
@@ -205,10 +245,10 @@ export default {
     }
   },
   methods: {
-    goView(e){
-      this.$store.commit('SET_CURRENT_COVER',e);
+    goView(e) {
+      this.$store.commit("SET_CURRENT_COVER", e);
       wx.navigateTo({
-        url: '/pages/preface/main'
+        url: "/pages/preface/main"
       });
     },
     onSortChoose(e) {
@@ -235,28 +275,32 @@ export default {
       });
     },
     onDistrictSelect(i) {
-      this.requestCondition.district = i.value;
+      this.districtIndex = i.mp.detail.value;
+      this.requestCondition.district = this.districtSelectArray[
+        i.mp.detail.value
+      ].value;
       this.requestCondition.page = 0;
+      this.cardInfoList = [];
       this.randomRequest();
     },
     onNavSelect(card) {
       this.requestCondition.page = 0;
       this.currentCard = card.value;
-      this.requestCondition.devision = card.title
+      this.requestCondition.devision = card.title;
       this.cardInfoList = [];
       this.randomRequest();
       api.saveAccessHistory({
-        nickName:this.$store.state.USER_INFO.nickName,
-        gender:this.$store.state.USER_INFO.gender,
-        language:this.$store.state.USER_INFO.language,
-        city:this.$store.state.USER_INFO.city,
-        province:this.$store.state.USER_INFO.province,
-        country:this.$store.state.USER_INFO.country,
-        avataUrl:this.$store.state.USER_INFO.avataUrl,
-        functionName:"首页导航",
-        functionCode:1,
-        project:card.title
-      })
+        nickName: this.$store.state.USER_INFO.nickName,
+        gender: this.$store.state.USER_INFO.gender,
+        language: this.$store.state.USER_INFO.language,
+        city: this.$store.state.USER_INFO.city,
+        province: this.$store.state.USER_INFO.province,
+        country: this.$store.state.USER_INFO.country,
+        avataUrl: this.$store.state.USER_INFO.avataUrl,
+        functionName: "首页导航",
+        functionCode: 1,
+        project: card.title
+      });
     },
     onFocus() {
       wx.navigateTo({
@@ -265,7 +309,7 @@ export default {
     },
     randomRequest() {
       let me = this;
-      if(this.requestCondition.page==-2){
+      if (this.requestCondition.page == -2) {
         //last page, no request.
         return;
       }
@@ -280,13 +324,13 @@ export default {
       }
       api.homeList(this.requestCondition, res => {
         if (res.success) {
-          if(res.data.length==0){
-            this.requestCondition.page = -2
-            console.log('NO MORE DATA REQUESTED!')
+          if (res.data.length == 0) {
+            this.requestCondition.page = -2;
+            console.log("NO MORE DATA REQUESTED!");
           }
           this.cardInfoList = this.cardInfoList.concat(res.data);
           wx.hideLoading();
-        }else{
+        } else {
           wx.hideLoading();
           wx.showLoading({
             title: "网络延迟过高",
@@ -327,9 +371,7 @@ export default {
               "content-type": "application/json"
             },
             data: { id: option.target.id },
-            success: function(res) {
-
-            }
+            success: function(res) {}
           });
         }
       };
@@ -345,9 +387,7 @@ export default {
               "content-type": "application/json"
             },
             data: { id: option.target.id },
-            success: function(res) {
-
-            }
+            success: function(res) {}
           });
         }
       };
@@ -474,7 +514,18 @@ export default {
   align-items: center;
   .search-input {
     margin-left: 10px;
-    flex-grow: 2;
+    flex-grow: 1;
+  }
+  .selector {
+    min-width: 60px;
+    .title {
+      font-size: 32rpx;
+      color: #4d4d4d;
+      font-weight: 600;
+      height: 64rpx;
+      line-height: 64rpx;
+      margin: 0;
+    }
   }
 }
 .nav-des {

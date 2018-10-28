@@ -58,8 +58,8 @@
                 <div v-for="(d,dk) in devs" :key="dk" class="compare-block">
                     <div class="title left">{{(dk+1)+'.'+ d.devName}}</div>
                     <div>
-                        <div class="red-border"><div class="progress red" :style="{'width':d.mark1+'%'}"></div></div>
-                        <div class="green-border"><div class="progress green" :style="{'width':d.mark2+'%'}"></div></div>
+                        <div ><div class="progress red" :style="{'width':d.mark1+'%'}"></div></div>
+                        <div ><div class="progress green" :style="{'width':d.mark2+'%'}"></div></div>
                     </div>
                 </div>
             </div>
@@ -212,7 +212,7 @@ export default {
   color: rgb(22, 31, 34);
   margin-top: 8px;
 }
-.grean-border {
+.green-border {
   border: 1px solid rgb(73, 217, 183);
 }
 .red-border {

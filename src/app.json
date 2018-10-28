@@ -1,9 +1,9 @@
 {
   "pages": [
+    "pages/compare/main",
     "pages/home/main",
     "pages/favorite/main",
     "pages/filter/main",
-    "pages/compare/main",
     "pages/compareResult/main",
     "pages/mine/main",
     "pages/counter/main",
