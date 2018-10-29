@@ -1,7 +1,7 @@
 {
   "pages": [
-    "pages/compare/main",
     "pages/home/main",
+    "pages/compare/main",
     "pages/favorite/main",
     "pages/filter/main",
     "pages/compareResult/main",

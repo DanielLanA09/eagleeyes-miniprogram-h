@@ -1,11 +1,14 @@
 <template>
     <div>
         <!-- COMPARE ITEMS -->
-        <div class="compare-item">
-            <div class="item1 block">{{item1.title}}</div>
-            <span class="vs">VS</span>
-            <div class="item2 block">{{item2.title}}</div>
+        <div class="fix">
+          <div class="compare-item">
+              <div class="item1 block">{{item1.title}}</div>
+              <span class="vs">VS</span>
+              <div class="item2 block">{{item2.title}}</div>
+          </div>
         </div>
+
         <!-- COMPARE TAGS -->
         <div class="tag-block eagle-card">
             <!-- title -->
@@ -13,15 +16,15 @@
             <div class="body">
                 <!-- advantage -->
                 <div class="block">
-                    <div class="content nolimit grean-border">优势</div>
+                    <div class="content nolimit green-border">优势</div>
                     <div class="block-body">
                         <div class="block-item">
-                            <div class="content grean-border bold">{{item1.title}}</div>
-                            <div class="content grean-border" v-for="(t,i) in item1.tags" :key="i" v-if="t.tagType=='ADVANTAGE'">{{t.tagName}}</div>
+                            <div class="content green-border bold">{{item1.title}}</div>
+                            <div class="content green-border" v-for="(t,i) in item1.tags" :key="i" v-if="t.tagType=='ADVANTAGE'">{{t.tagName}}</div>
                         </div>
                         <div class="block-item">
-                            <div class="content grean-border bold">{{item2.title}}</div>
-                            <div class="content grean-border" v-for="(t,i) in item2.tags" :key="i" v-if="t.tagType=='ADVANTAGE'">{{t.tagName}}</div>
+                            <div class="content green-border bold">{{item2.title}}</div>
+                            <div class="content green-border" v-for="(t,i) in item2.tags" :key="i" v-if="t.tagType=='ADVANTAGE'">{{t.tagName}}</div>
                         </div>
                     </div>
                 </div>
@@ -124,10 +127,17 @@ export default {
 </script>
 
 <style scoped lang="less">
+.fix{
+  position: fixed;
+  width: 100vw;
+  text-align: center;
+  top: 0;
+  background: white;
+}
 .compare-item {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 0 15px;
   .block {
     flex-grow: 1;
     text-align: center;
@@ -137,6 +147,7 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-weight: 600;
   }
   .vs {
     width: 28px;
@@ -148,16 +159,16 @@ export default {
     margin: 0 8px;
   }
   .item1 {
-    border: 1px solid rgb(73, 217, 183);
+    border: 1px solid rgb(255, 128, 151);
   }
   .item2 {
-    border: 1px solid rgb(255, 128, 151);
+    border: 1px solid rgb(73, 217, 183);
   }
 }
 .tag-block {
   padding: 15px 15px;
   margin: 0 16px;
-  margin-top: 8px;
+  margin-top: 50px;
   .body {
     display: flex;
     justify-content: center;

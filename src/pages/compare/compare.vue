@@ -2,7 +2,7 @@
     <div>
         <!-- SEARCH TITLE -->
         <div class="input-block">
-            <input type="text" placeholder="搜索您想找的小区、楼盘、地点" placeholder-style="font-size:14px;" class="input" v-model="title" @bindconfirm="request" @confirm="onTitleConfirm">
+            <input type="text" placeholder="搜索您想找的小区、楼盘" placeholder-style="font-size:14px;" class="input" v-model="title" @bindconfirm="request" @confirm="onTitleConfirm">
         </div>
         <!-- FILTER TITLE -->
         <div class="title">
