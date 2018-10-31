@@ -312,6 +312,7 @@ export default {
       api.findParams(dev.id, res => {
         if (res.success) {
           let temParams = [];
+          res.data = res.data.filter(i=>i.data!="");
           res.data.map((i, k) => {
             let ti = temParams.find(t => t.type == i.type);
             if (ti) {

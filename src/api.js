@@ -7,7 +7,6 @@ const base = "https://www.eagleshing.com"
 // const host = base;
 const host = base+'/eagleeyes-mini-3.0';
 
-
 function request(method, url, data, callback, complete) {
     wx.request({
         method: method,

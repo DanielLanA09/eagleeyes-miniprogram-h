@@ -49,7 +49,10 @@ function formatSubtab(tab) {
 function formatModuleContent(module) {
   let results=[];
   if (module.branch == 0) {
-    results = parseText(JSON.parse(module.jsonContent));
+    let temContent = JSON.parse(module.jsonContent);
+    temContent.forEach(c=>{
+      results.push(parseText(c))
+    })
   } else if (module.branch == 1) {
     let temImgContents = JSON.parse(module.jsonContent);
     for (const item of temImgContents) {

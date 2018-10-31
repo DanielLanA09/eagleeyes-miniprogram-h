@@ -85,13 +85,15 @@
           </div>
         </div>
         <div class="subtab-post" v-if="m.branch==0">
-          <p><span @click="showMessage(c)" v-for="(c,ck) in m.content" :key="ck"
-          :class="{'text-explain': c.type === 'explain', 'text-bold': c.type === 'bold','text-transport':c.type === 'transport'}" >{{c.content}}</span></p>
+          <p v-for="(c,ck) in m.content" :key="ck" >
+            <span @click="showMessage(c)" v-for="(cc,cck) in c" :key="cck" :class="{'text-explain': cc.type === 'explain', 'text-bold': cc.type === 'bold','text-transport':cc.type === 'transport'}" >{{cc.content}}</span>
+          </p>
         </div>
-        <div class="subtab-post" v-if="m.branch==1">
-          <p class="subtab-img-desc" v-for="(c,ck) in m.content" :key="ck"><span v-for="(sc,sck) in c.content" :key="sck" 
-          :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}">{{sc.content}}</span></p>
-        </div>
+        <!-- <div class="subtab-post" v-if="m.branch==1">
+          <p class="subtab-img-desc" v-for="(c,ck) in m.content" :key="ck">
+            <span v-for="(sc,sck) in c.content" :key="sck" :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}">{{sc.content}}</span>
+          </p>
+        </div> -->
         <div class="tips e-center">
           <span><button @click="goDetail">点击查看详情 ></button></span>
         </div>
@@ -415,6 +417,7 @@ export default {
             res.data[key].content = preserveHelper.formatModule(res.data[key]);
           });
           me.modules = res.data;
+          console.log("------------->小区干货：",me.modules)
           me.gStart = !me.gStart;
         }
       });
