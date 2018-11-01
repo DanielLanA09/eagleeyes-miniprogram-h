@@ -47,12 +47,15 @@ function formatSubtab(tab) {
 }
 
 function formatModuleContent(module) {
-  let results=[];
+  let results = [];
   if (module.branch == 0) {
     let temContent = JSON.parse(module.jsonContent);
-    temContent.forEach(c=>{
-      results.push(parseText(c))
-    })
+    if (temContent != "") {
+      temContent.forEach(c => {
+        results.push(parseText(c))
+      })
+    }
+
   } else if (module.branch == 1) {
     let temImgContents = JSON.parse(module.jsonContent);
     for (const item of temImgContents) {
@@ -99,6 +102,6 @@ function parseText(text) {
 }
 
 export default {
-  formatSubtab:formatSubtab,
-  formatModule:formatModuleContent
+  formatSubtab: formatSubtab,
+  formatModule: formatModuleContent
 };

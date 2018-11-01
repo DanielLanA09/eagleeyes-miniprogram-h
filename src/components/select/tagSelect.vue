@@ -2,7 +2,7 @@
     <div >
         <!-- NAME -->
         <div class="name" @click="showOption">
-            <span>标签</span>
+            <span>标签</span> <i class="iconfont icon-arrow-left"></i>
         </div>
         <!-- SELECT OPTIONS -->
         <div class="option" v-if="optionsVisible">
@@ -19,9 +19,7 @@ export default {
   components: {
     notation
   },
-  props:{
-    
-  },
+  props: {},
   data: () => ({
     tags: [
       {
@@ -97,18 +95,18 @@ export default {
         tagType: "ADVANTAGE"
       }
     ],
-    optionsVisible:false
+    optionsVisible: false
   }),
-  methods:{
-      showOption(){
-          this.optionsVisible = !this.optionsVisible;
-      },
-      onSelected(e){
-          this.$emit("onSelected",e);
-      },
-      onBlur(){
-        console.log("ssdf")
-      }
+  methods: {
+    showOption() {
+      this.optionsVisible = !this.optionsVisible;
+    },
+    onSelected(e) {
+      this.$emit("onSelected", e);
+    },
+    onBlur() {
+      console.log("ssdf");
+    }
   }
 };
 </script>
@@ -121,9 +119,10 @@ export default {
   text-align: center;
   display: flex;
   align-items: center;
+  display: flex;
   i {
-    font-size: 24px;
-    color: #4d4d4d;
+    margin-left: 5px;
+    font-size: 23rpx;
   }
 }
 .option {

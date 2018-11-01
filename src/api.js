@@ -36,7 +36,7 @@ function request(method, url, data, callback, complete) {
 }
 
 export default {
-    BASE_HOST: base + '/eagleeyes-mini-3.0/api/file/downloadFile/',
+    BASE_HOST: "http://image.eagleshing.com" + '/eagleeyes-mini-3.0/api/file/downloadFile/',
     getUserInfo(callback) {
         console.log("GETTING USER INFO...");
         wx.getUserInfo({
@@ -175,6 +175,19 @@ export default {
     },
     findFavorite(openId, callback) {
         request("GET", "/user/findcollection", {openId:openId}, callback);
+    },
+    addViewPoint(coverId,callback){
+        request("GET",'/post/addviewpoint/'+coverId,callback);
+    },
+    getVacabulary(title,callback){
+        request("GET",'/post/getvacabulary',{title:title},callback);
+    },
+    getBus(station,callback){
+        request("GET",'/post/findbus',{station:station},callback);
+    },
+    saveAdvice(data,callback){
+        request("POST","/post/advice",data,callback);
     }
+
 }
 

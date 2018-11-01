@@ -54,7 +54,7 @@ export default {
 .a-cover {
   position: relative;
   width: 100%;
-  height: 400rpx;
+  height: 200px;
   background: gray;
   .back-home{
     position: absolute;

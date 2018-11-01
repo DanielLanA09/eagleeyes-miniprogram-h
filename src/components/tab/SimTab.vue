@@ -5,7 +5,7 @@
                 <div class="title" :class="{active:selected==tk}" @click="onSelected(tk)" v-if="titleSet">
                     {{t.type}}
                 </div>
-                <div class="sim-title" v-if="!titleSet">
+                <div class="sim-title" @click="onSelected(tk)" v-if="!titleSet">
                   三秒概况
                 </div>
             </div>
@@ -48,7 +48,7 @@ export default {
   computed: {
     titleSet() {
       if (this.dataInfo.length > 0) {
-        if (this.dataInfo[0].type == "") {
+        if (this.dataInfo[0].type == "" || this.dataInfo[0].type == null) {
           // this.contentTop = 20;
           return false;
         } else {

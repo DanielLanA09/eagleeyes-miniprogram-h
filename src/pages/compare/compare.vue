@@ -10,7 +10,7 @@
                 <!-- <m-select @onSelect="onDistrictSelected"></m-select> -->
                 <picker @change="onDistrictSelected" :range="districtAvailList" range-key="name" :value="districtIndex">
                   <div class="selector">
-                    {{districtAvailList[districtIndex].name}}
+                    {{districtAvailList[districtIndex].name}} <i class="iconfont icon-arrow-left"></i>
                   </div>
                 </picker>
             </div>
@@ -21,7 +21,7 @@
                 <!-- <m-select :list="priceList" @onSelect="onPriceSelected"></m-select> -->
                 <picker @change="onPriceSelected" :range="priceAvailList" range-key="name" :value="priceIndex">
                   <div class="selector">
-                    {{priceAvailList[priceIndex].name}}
+                    {{priceAvailList[priceIndex].name}} <i class="iconfont icon-arrow-left"></i>
                   </div>
                 </picker>
             </div>
@@ -253,6 +253,11 @@ export default {
   height: 64rpx;
   line-height: 64rpx;
   margin: 0;
+  display: flex;
+  i {
+    margin-left: 5px;
+    font-size: 23rpx;
+  }
 }
 .selected {
   position: sticky;

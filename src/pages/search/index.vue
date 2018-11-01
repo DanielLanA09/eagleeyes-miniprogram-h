@@ -156,6 +156,7 @@ export default {
     },
     goView(e){
       this.$store.commit('SET_CURRENT_COVER',e);
+      api.addViewPoint(e.coverId);
       wx.navigateTo({
         url: '/pages/preface/main'
       });
@@ -377,7 +378,7 @@ export default {
     height: 84rpx;
     border-radius: 100%;
     i {
-      font-size: 45px;
+      font-size: 30px;
       color: #808080;
     }
   }

@@ -4,14 +4,14 @@
             <!-- <m-select @onSelect="onDistrictSelect" @onAbort="onAbort"></m-select> -->
             <picker @change="onDistrictSelect" :range="districtAvailList" range-key="name" :value="districtIndex">
               <div class="districtSelector">
-                {{districtAvailList[districtIndex].name}}
+                {{districtAvailList[districtIndex].name}} <i class="iconfont icon-arrow-left"></i>
               </div>
             </picker>
             <switch-tab @onSelect="tabChange"></switch-tab>
             <!-- <m-select :list="priceAvailList" @onSelect="onPriceSelect" :left="'-40px'"></m-select> -->
             <picker @change="onPriceSelect" :range="priceAvailList" range-key="name" :value="priceIndex">
               <div class="priceSelector">
-                {{priceAvailList[priceIndex].name}}
+                {{priceAvailList[priceIndex].name}} <i class="iconfont icon-arrow-left"></i>
               </div>
             </picker>
         </div>
@@ -243,6 +243,7 @@ export default {
   methods: {
     goView(e) {
       this.$store.commit("SET_CURRENT_COVER", e);
+      api.addViewPoint(e.coverId);
       wx.navigateTo({
         url: "/pages/preface/main"
       });
@@ -343,7 +344,7 @@ export default {
     onQuetionComplete(tags) {
       this.tagStr = Array.from(tags).join(",");
       this.questionVisible = false;
-      this.cpage = 0;
+      this.cpage = -1 ;
       this.recommendRequest();
     },
     recommendRequest() {
@@ -450,6 +451,11 @@ export default {
     height: 64rpx;
     line-height: 64rpx;
     margin: 0;
+    display: flex;
+      i{
+        margin-left: 5px;
+        font-size: 23rpx;
+      }
   }
   .priceSelector{
     font-size: 32rpx;
@@ -458,6 +464,11 @@ export default {
     height: 64rpx;
     line-height: 64rpx;
     margin: 0;
+    display: flex;
+      i{
+        margin-left: 5px;
+        font-size: 23rpx;
+      }
   }
   .tags {
     border-radius: 5px;

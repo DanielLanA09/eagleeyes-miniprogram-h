@@ -5,7 +5,7 @@
             <div class="selector">
               <picker @change="onDistrictSelect" :range="districtSelectArray" range-key="name" :value="districtIndex">
                 <div class="title">
-                  {{districtSelectArray[districtIndex].name}}
+                  {{districtSelectArray[districtIndex].name}} <i class="iconfont icon-arrow-left"></i>
                 </div>
               </picker>
             </div>
@@ -218,12 +218,13 @@ export default {
       },
       sortType: "random",
       cpage: 0,
+      pageEnd:false,
       requestCondition: {
         devision: "学校",
         mark: 70,
         district: "520115",
         size: 5,
-        page: 0
+        page: -1
       }
     };
   },
@@ -232,7 +233,6 @@ export default {
     this.randomRequest();
   },
   onReachBottom() {
-    this.requestCondition.page++;
     this.randomRequest();
   },
   computed: {
@@ -247,9 +247,14 @@ export default {
   methods: {
     goView(e) {
       this.$store.commit("SET_CURRENT_COVER", e);
+      api.addViewPoint(e.coverId);
       wx.navigateTo({
         url: "/pages/preface/main"
       });
+    },
+    reSetPage(){
+      this.pageEnd = false;
+      this.requestCondition.page=-1;
     },
     onSortChoose(e) {
       this.cpage = 0;
@@ -279,12 +284,12 @@ export default {
       this.requestCondition.district = this.districtSelectArray[
         i.mp.detail.value
       ].value;
-      this.requestCondition.page = 0;
+      this.reSetPage();
       this.cardInfoList = [];
       this.randomRequest();
     },
     onNavSelect(card) {
-      this.requestCondition.page = 0;
+      this.reSetPage();
       this.currentCard = card.value;
       this.requestCondition.devision = card.title;
       this.cardInfoList = [];
@@ -309,9 +314,11 @@ export default {
     },
     randomRequest() {
       let me = this;
-      if (this.requestCondition.page == -2) {
+      if (this.pageEnd) {
         //last page, no request.
         return;
+      }else{
+        this.requestCondition.page++;
       }
       wx.showLoading({
         title: "加载中",
@@ -325,7 +332,8 @@ export default {
       api.homeList(this.requestCondition, res => {
         if (res.success) {
           if (res.data.length == 0) {
-            this.requestCondition.page = -2;
+            // this.requestCondition.page = -2;
+            this.pageEnd = true;
             console.log("NO MORE DATA REQUESTED!");
           }
           this.cardInfoList = this.cardInfoList.concat(res.data);
@@ -517,7 +525,7 @@ export default {
     flex-grow: 1;
   }
   .selector {
-    min-width: 60px;
+    min-width: 70px;
     .title {
       font-size: 32rpx;
       color: #4d4d4d;
@@ -525,6 +533,11 @@ export default {
       height: 64rpx;
       line-height: 64rpx;
       margin: 0;
+      display: flex;
+      i{
+        margin-left: 5px;
+        font-size: 23rpx;
+      }
     }
   }
 }

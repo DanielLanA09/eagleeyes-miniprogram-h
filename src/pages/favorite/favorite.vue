@@ -69,6 +69,7 @@ export default {
     onSelect(e) {
       if (!this.edit) {
         this.$store.commit("SET_CURRENT_COVER", e);
+        api.addViewPoint(e.coverId);
         wx.navigateTo({
           url: "/pages/preface/main"
         });

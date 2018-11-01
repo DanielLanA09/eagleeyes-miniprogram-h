@@ -1,7 +1,7 @@
 <template>
     <div class="switch-back">
         <div class="item" @click="onChoose(false)"   :class="{active:choosedItem==false}">精准</div>
-        <div class="item" @click="onChoose(true)" :class="{active:choosedItem==true}">个性化</div>
+        <!-- <div class="item" @click="onChoose(true)" :class="{active:choosedItem==true}">个性化</div> -->
     </div>
 </template>
 

@@ -169,9 +169,9 @@ export default {
       }
     ],
     contentlst2: {
-      采集时间: "2018年8月10日",
-      开发商: "贵州保安房地产开发有限公司",
-      小区地址: "贵阳市-观山湖区碧海南路2号"
+      采集时间: "",
+      开发商: "",
+      小区地址: ""
     },
 
     gStart: false,
@@ -335,6 +335,7 @@ export default {
               i.img = this.$store.state.BASE_HOST + imgs[0];
             }
           });
+          res.data.sort((a,b)=>a.distance-b.distance)
           me.aroundList = res.data;
         }
       });
@@ -381,6 +382,9 @@ export default {
           }
 
           let param4 = params.find(i => i.paramName == "开发商");
+          if(param4==null){
+            param4 = params.find(i=>i.paramName == "开发商名")
+          }
           if (param4) {
             me.contentlst2.开发商 = param4.paramData;
           }

@@ -18,8 +18,16 @@
 <script>
 import api from "@/api";
 export default {
+  onLoad() {
+    api.simLogin(res => {
+      if (res.success) {
+        this.user = res.data;
+      }
+    });
+  },
   data: () => ({
-    advice: ""
+    advice: "",
+    user: null
   }),
   methods: {
     chooseImg() {
@@ -40,11 +48,15 @@ export default {
     },
     onSubmit() {
       if (this.advice != "") {
-        wx.showModal({
-          title: "反馈提示",
-          content: "谢谢您提出的宝贵意见！",
-          showCancel: false,
-          confirmText: "关闭"
+        api.saveAdvice({ userId: this.user.id, content: this.advice }, res => {
+          if (res.success) {
+            wx.showModal({
+              title: "反馈提示",
+              content: "谢谢您提出的宝贵意见！",
+              showCancel: false,
+              confirmText: "关闭"
+            });
+          }
         });
       }
     }

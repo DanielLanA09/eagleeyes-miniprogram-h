@@ -88,11 +88,11 @@
                         </div>
                         <div class="subtab-post" v-for="(c,ck) in m.content" :key="ck">
                             <p><span v-for="(sc,sck) in c.content" :key="sck" :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}" 
-                                @click="showMessage(c)">{{sc.content}}</span></p>
+                                @click="showMessage(sc)">{{sc.content}}</span></p>
                             
                             <div class="subtab-img-desc" v-if="img" v-for="(img,img_key) in c.img" :key="img_key">
                               <!-- FIXME: CHANGE THIS ABSOLUTE ROUTE. -->
-                                <img :src="'https://www.eagleshing.com/eagleeyes-mini-3.0/api/file/downloadFile/'+img">
+                                <img :src="'http://image.eagleshing.com/eagleeyes-mini-3.0/api/file/downloadFile/'+img">
                                 <span>{{c.imgNames[img_key]}}</span>
                             </div>
                         </div>
@@ -253,53 +253,48 @@ export default {
     showMessage(m) {
       let me = this;
       if (m.type == "explain") {
-        wx.request({
-          url: api.getURL("ExpainDic/get"),
-          data: { title: m.content },
-          header: { "content-type": "application/json" },
-          success: function(r) {
-            let data = r.data.data;
-            if (data.length > 0) {
-              wx.showModal({
-                title: data[0].title,
-                content: data[0].content,
-                showCancel: false,
-                confirmText: "知道了",
-                confirmColor: "#32bb8f"
-              });
-            } else {
-              wx.showModal({
-                title: m.content,
-                content: "该名词正在备案中，敬请期待",
-                showCancel: false,
-                confirmText: "知道了",
-                confirmColor: "#32bb8f"
-              });
-            }
+        api.getVacabulary(m.content, res => {
+          if (res.success) {
+            wx.showModal({
+              title: res.data.title,
+              content: res.data.content,
+              showCancel: false,
+              confirmText: "知道了",
+              confirmColor: "#32bb8f"
+            });
           }
         });
       } else if (m.type == "transport") {
-        wx.request({
-          url: api.getURL("posts/bus"),
-          data: { name: m.content },
-          header: { "content-type": "application/json" },
-          success: function(r) {
-            let data = r.data.data[0];
-            if (data) {
-              me.transportBox.title = data.stationName;
-              me.transportBox.list = data.busLst;
-              me.transportBox.num = data.busLst.length;
-              me.transportBox.show = true;
-            } else {
-              wx.showModal({
-                title: m.content,
-                content:
-                  "数据正在采集中，敬请期待。您也可以在公众号中提供相关信息，感谢你的支持。",
-                showCancel: false,
-                confirmText: "知道了",
-                confirmColor: "#32bb8f"
-              });
-            }
+        // wx.request({
+        //   url: api.getURL("posts/bus"),
+        //   data: { name: m.content },
+        //   header: { "content-type": "application/json" },
+        //   success: function(r) {
+        //     let data = r.data.data[0];
+        //     if (data) {
+        //       me.transportBox.title = data.stationName;
+        //       me.transportBox.list = data.busLst;
+        //       me.transportBox.num = data.busLst.length;
+        //       me.transportBox.show = true;
+        //     } else {
+        //       wx.showModal({
+        //         title: m.content,
+        //         content:
+        //           "数据正在采集中，敬请期待。您也可以在公众号中提供相关信息，感谢你的支持。",
+        //         showCancel: false,
+        //         confirmText: "知道了",
+        //         confirmColor: "#32bb8f"
+        //       });
+        //     }
+        //   }
+        // });
+        api.getBus(m.content, res => {
+          if (res.success) {
+            console.log(res.data);
+            me.transportBox.title = res.data.stationName;
+            me.transportBox.list = res.data.bus;
+            me.transportBox.num = res.data.bus.length;
+            me.transportBox.show = true;
           }
         });
       }
@@ -312,7 +307,13 @@ export default {
       api.findParams(dev.id, res => {
         if (res.success) {
           let temParams = [];
-          res.data = res.data.filter(i=>i.data!="");
+          res.data = res.data.filter(i => i.data != null);
+          res.data.map(i => {
+            if (i.type == "" || i.type == null) {
+              i.type = "";
+            }
+          });
+          console.log("THE PARAMS LIST IS:", res.data);
           res.data.map((i, k) => {
             let ti = temParams.find(t => t.type == i.type);
             if (ti) {
@@ -343,9 +344,16 @@ export default {
             );
           }
           //SET OTHER CONTENT
-          let temModules = res.data.filter(i => i.branch != "2").sort((a,b)=>a.mId-b.mId);
+          let temModules = res.data
+            .filter(i => i.branch != "2")
+            .sort((a, b) => a.mId - b.mId);
 
           this.cModules = temModules;
+          
+          wx.pageScrollTo({
+            scrollTop: 0,
+            duration: 500
+          });
         }
       });
     },
@@ -378,10 +386,6 @@ export default {
       }
     },
     startSwipe(xOff) {
-      wx.pageScrollTo({
-        scrollTop: 0,
-        duration: 500
-      });
       let abs = Math.abs(xOff);
       if (abs < 10) {
         //小于10表示是标题头控制的翻转
