@@ -9,7 +9,8 @@ export default new Vuex.Store({
       DEVISIONS:null,
       CURRENT_DEVISION:null,
       CURRENT_COVER:null,
-      COMPARE_ITEMS:null
+      COMPARE_ITEMS:null,
+      ARTICLE_TABLE:null
     },
     mutations: {
       SET_USER(state,user){
@@ -20,7 +21,7 @@ export default new Vuex.Store({
       SET_BASE_HOST(state,host){
         console.log('STORING BASE_HOST...');
         state.BASE_HOST = host;
-        console.log('STORED BASE_HOST IS:',state.BASE_HOST);        
+        console.log('STORED BASE_HOST IS:',state.BASE_HOST);
       },
       SET_CURRENT_COVER(state,cover){
         console.log('STORING CURRENT COVER...');
@@ -41,9 +42,12 @@ export default new Vuex.Store({
         console.log("STORING ITEMS...");
         state.COMPARE_ITEMS = items;
         console.log('STORED COMPARE ITEMS ARE:',state.COMPARE_ITEMS);
+      },
+      SET_ARTICLE_TABLE(state,items){
+        state.ARTICLE_TABLE = items;
       }
     },
     actions: {
-  
+
     }
   })

@@ -51,9 +51,14 @@ function formatModuleContent(module) {
   if (module.branch == 0) {
     let temContent = JSON.parse(module.jsonContent);
     if (temContent != "") {
-      temContent.forEach(c => {
-        results.push(parseText(c))
-      })
+      if(temContent instanceof Array){
+        temContent.forEach(c => {
+          results.push(parseText(c))
+        })
+      }else{
+        results.push(parseText(temContent))
+      }
+
     }
 
   } else if (module.branch == 1) {

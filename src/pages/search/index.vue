@@ -15,7 +15,7 @@
             <notation :width="150" :list="list" :marginRight="10" :fontColor="'rgb(75,206,175)'" :clickable=false :isNonBack=true @onClick="onNotationClick"></notation>
         </div>
         <div>
-          <!-- 当搜索没有结果时 -->
+          <!-- 当没有结果时 -->
           <div v-if="!showResult" class="search-noresult">
             <div class="h-padding-34 info" >
               <i class="iconfont icon-wu" ></i>
@@ -31,7 +31,7 @@
               </div>
             </div>
           </div>
-          <!-- 当搜索有结果时 -->
+          <!-- 当有结果时 -->
           <div class="h-padding-34 search-result" v-if="showResult">
             <div v-for="(r,k) in searchList" :key="k">
               <g-card :info="r" @onClick="goView"></g-card>
@@ -158,7 +158,7 @@ export default {
       this.$store.commit('SET_CURRENT_COVER',e);
       api.addViewPoint(e.coverId);
       wx.navigateTo({
-        url: '/pages/preface/main'
+        url: '/pages/preface/main?id='+e.coverId
       });
     },
     deleteKeyword(){
@@ -200,36 +200,6 @@ export default {
           this.searchList = res.data;
         }
       })
-      // wx.request({
-      //   header: { "content-type": "application/json" },
-      //   url: api.getURL("posts/search"),
-      //   data: {
-      //     keyword: info,
-      //     page: this.cpage,
-      //     size: 7
-      //   },
-      //   success: function(r) {
-      //     // console.log(r.data.data)
-      //     let data = r.data.data;
-      //     if(data.last){
-      //       me.cpage=-2;
-      //     }
-      //     // me.searchWord = "取消";
-      //     if (data.content.length == 0) {
-      //       me.showResult = false;
-      //       me.showHotKey = true;
-      //       me.searchRecommend(me);
-      //     } else {
-      //       me.showResult = true;
-      //       me.showHotKey = false;
-      //     }
-
-      //     me.searchList = me.searchList.concat(data.content);
-      //     setTimeout(() => {
-      //         wx.hideLoading();
-      //       }, 500);
-      //   }
-      // });
     },
     searchRecommend(me) {
       if(me._cpage==-2){

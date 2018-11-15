@@ -19,7 +19,7 @@
         <div class="h-padding-34">
             <card-scroll :currentCard="currentCard" @onSelect="onNavSelect"></card-scroll>
         </div>
-        <div class="h-padding-34"> 
+        <div class="h-padding-34">
           <div class="standar-text">
             <div class="title">
               测评指标数
@@ -249,7 +249,7 @@ export default {
       this.$store.commit("SET_CURRENT_COVER", e);
       api.addViewPoint(e.coverId);
       wx.navigateTo({
-        url: "/pages/preface/main"
+        url: "/pages/preface/main?id="+e.coverId
       });
     },
     reSetPage(){

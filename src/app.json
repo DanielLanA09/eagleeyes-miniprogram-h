@@ -1,7 +1,10 @@
 {
   "pages": [
+    "pages/search/main",
     "pages/home/main",
+    "pages/articleTable/main",
     "pages/compare/main",
+    "pages/recommend/main",
     "pages/favorite/main",
     "pages/filter/main",
     "pages/compareResult/main",
@@ -9,10 +12,12 @@
     "pages/counter/main",
     "pages/preface/main",
     "pages/analysis/main",
-    "pages/search/main",
+
     "pages/map/main",
     "pages/notice/main",
-    "pages/advice/main"
+    "pages/advice/main",
+    "pages/blog/main"
+
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -25,14 +30,6 @@
       {
         "text":"首页",
         "pagePath":"pages/home/main"
-      },
-      {
-        "text":"筛选",
-        "pagePath":"pages/filter/main"
-      },
-      {
-        "text":"对比",
-        "pagePath":"pages/compare/main"
       },
       {
         "text":"我的",

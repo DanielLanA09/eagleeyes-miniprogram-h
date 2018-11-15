@@ -16,7 +16,9 @@ export default {
       appID: "500625991"
     });
     that.$store.commit("SET_BASE_HOST",api.BASE_HOST);
-    api.simLogin();
+    api.simLogin(res=>{
+      this.$store.commit("SET_USER", res.data);
+    });
   }
 };
 </script>

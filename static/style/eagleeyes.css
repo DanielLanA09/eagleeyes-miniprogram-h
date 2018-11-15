@@ -105,7 +105,12 @@
 .flex{
     display: flex;
 }
-
+.e-margin-top-10{
+  margin-top: 10rpx;
+}
+.e-margin-top-20{
+  margin-top: 20rpx;
+}
 .e-margin-top-30{
     margin-top: 30rpx;
 }

@@ -41,12 +41,10 @@
           <title :title="'周边配套'"></title>
         </div>
         <div class="body e-center">
-          <!-- <pgraph1 ref="radar1" :start="gStart" :mstyle=gStyle :mData="outerList"  @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph1> -->
           <div>
             <div class="g-container" :style="{height:mstyle1.mH+'px',width:mstyle1.mW+'px'}">
               <canvas class="g-canvas" canvas-id="radar1" :style="{height:mstyle1.mH+'px',width:mstyle1.mW+'px'}" @click="goDetail"></canvas>
               <div v-for="(i,k) in outerList" :key="k" class="params" style="position:absolute;" :style="{top:i.top+'px',left:i.left+'px',color:i.color}" @click="goNav(i)">
-                <!-- {{i.devName}} -->
                 <span>{{i.devName}} <icon class="iconfont" :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']" style="font-size:12px;" ></icon></span>
               </div>
             </div>
@@ -61,12 +59,10 @@
           <title :title="'小区内部'"></title>
         </div>
         <div class="body e-center">
-          <!-- <pgraph2 ref="radar2" :start="gStart" :mstyle=gStyle :mData="innerList" @onParamClick="goNav" @onCanvasClick="goDetail"></pgraph2> -->
           <div>
             <div class="g-container" :style="{height:mstyle2.mH+'px',width:mstyle2.mW+'px'}">
               <canvas class="g-canvas" canvas-id="radar2" :style="{height:mstyle2.mH+'px',width:mstyle2.mW+'px'}" @click="goDetail"></canvas>
               <div v-for="(i,k) in innerList" :key="k" class="params" style="position:absolute;" :style="{top:i.top+'px',left:i.left+'px',color:i.color}" @click="goNav(i)">
-                <!-- {{i.devName}} -->
                 <span>{{i.devName}} <icon class="iconfont" :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']" style="font-size:12px;" ></icon></span>
               </div>
             </div>
@@ -89,11 +85,6 @@
             <span @click="showMessage(c)" v-for="(cc,cck) in c" :key="cck" :class="{'text-explain': cc.type === 'explain', 'text-bold': cc.type === 'bold','text-transport':cc.type === 'transport'}" >{{cc.content}}</span>
           </p>
         </div>
-        <!-- <div class="subtab-post" v-if="m.branch==1">
-          <p class="subtab-img-desc" v-for="(c,ck) in m.content" :key="ck">
-            <span v-for="(sc,sck) in c.content" :key="sck" :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}">{{sc.content}}</span>
-          </p>
-        </div> -->
         <div class="tips e-center">
           <span><button @click="goDetail">点击查看详情 ></button></span>
         </div>
@@ -219,40 +210,50 @@ export default {
     },
     innerList: []
   }),
-  onLoad() {
+  onLoad(query) {
     let me = this;
-    let cover = this.$store.state.CURRENT_COVER;
-    this.coverurl = api.BASE_HOST + cover.img.split("|")[1];
-    this.favorite = false;
-    if (this.$store.state.USER_INFO != null) {
-      api.simLogin(logRes => {
-        if (logRes.success) {
-          this.$store.commit("SET_USER", logRes.data);
-          api.isFavorite(
-            { userId: logRes.data.userId, coverId: me.coverId },
-            isFavoriteRes => {
-              if (isFavoriteRes.success) {
-                me.favorite = isFavoriteRes.data;
-              }
+    let cover = {};
+    api.findCover(
+      query.id,
+      res => {
+        me.$store.commit("SET_CURRENT_COVER", res.data);
+        cover = me.$store.state.CURRENT_COVER;
+      },
+      () => {
+        me.pid = cover.coverId;
+        me.coverurl = api.BASE_HOST + cover.img.split("|")[1];
+        me.favorite = false;
+        if (this.$store.state.USER_INFO != null) {
+          api.simLogin(logRes => {
+            if (logRes.success) {
+              this.$store.commit("SET_USER", logRes.data);
+              api.isFavorite(
+                { userId: logRes.data.userId, coverId: me.coverId },
+                isFavoriteRes => {
+                  if (isFavoriteRes.success) {
+                    me.favorite = isFavoriteRes.data;
+                  }
+                }
+              );
             }
-          );
+          });
         }
-      });
-    }
-    if (cover) {
-      wx.setNavigationBarTitle({
-        title: cover.title
-      });
+        if (cover) {
+          wx.setNavigationBarTitle({
+            title: cover.title
+          });
 
-      me.coverId = Number(cover.coverId);
-      me.title = cover.title;
-      me.price = cover.price;
-      me.notations = cover.tags;
-      me.latitude = cover.latitude;
-      me.longitude = cover.longitude;
+          me.coverId = Number(cover.coverId);
+          me.title = cover.title;
+          me.price = cover.price;
+          me.notations = cover.tags;
+          me.latitude = cover.latitude;
+          me.longitude = cover.longitude;
 
-      me.requestDevs(cover.coverId);
-    }
+          me.requestDevs(cover.coverId);
+        }
+      }
+    );
   },
 
   onShareAppMessage: function(option) {
@@ -335,7 +336,7 @@ export default {
               i.img = this.$store.state.BASE_HOST + imgs[0];
             }
           });
-          res.data.sort((a,b)=>a.distance-b.distance)
+          res.data.sort((a, b) => a.distance - b.distance);
           me.aroundList = res.data;
         }
       });
@@ -343,12 +344,9 @@ export default {
       api.findDevisionAndParams(me.coverId, 0, res => {
         if (res.success) {
           if (res.data.length == 0) {
-            console.log(
-              "------------THIS PREFACE DEVISION DO NOT HAS ANY PARAMS---------------"
-            );
+            console.log("------------THIS PREFACE DEVISION DO NOT HAS ANY PARAMS---------------");
             return;
           }
-
           let params = res.data[0].params;
           me.contentlst1 = [];
           let builtTime = params.find(i => i.paramName == "建成时间");
@@ -382,8 +380,8 @@ export default {
           }
 
           let param4 = params.find(i => i.paramName == "开发商");
-          if(param4==null){
-            param4 = params.find(i=>i.paramName == "开发商名")
+          if (param4 == null) {
+            param4 = params.find(i => i.paramName == "开发商名");
           }
           if (param4) {
             me.contentlst2.开发商 = param4.paramData;
@@ -421,7 +419,7 @@ export default {
             res.data[key].content = preserveHelper.formatModule(res.data[key]);
           });
           me.modules = res.data;
-          console.log("------------->小区干货：",me.modules)
+          console.log("------------->小区干货：", me.modules);
           me.gStart = !me.gStart;
         }
       });

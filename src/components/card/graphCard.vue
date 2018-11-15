@@ -8,11 +8,11 @@
                 <div class="title" @click="onClick()">
                     <div class="title">{{info.title}}</div>
                 </div>
-                <div class="h-between">
+                <div class="h-between" v-if="houseType!=''">
                     <div class="houstype">{{houseType}}<span class="mark"> {{setMark}}</span></div>
                     <div class="price">￥{{info.price}}</div>
                 </div>
-                <div @click="onClick()">
+                <div @click="onClick()" :class="{'e-margin-top-20':houseType!=''?false:true}">
                     <!-- <start-mark :value="info.mark"></start-mark> -->
                     <div class="notation" >
                         <!-- <notation :list="info.tags" :marginRight="24" :acceptType="'1'" :fontsize="'20'" :backgroundColor="'#4ad9b7'" :fontColor="'white'" :clickable="false" :width="'128'" :height="'40'"></notation> -->
@@ -23,7 +23,7 @@
                         <word-tag :list="info.tags" availType="DISADVANTAGE" :title="'缺点'" :titleColor="'#ff8097'" :borderColor="'#ff8097'"></word-tag>
                     </div>
                 </div>
-                <div class="footer">
+                <div :class="{'e-margin-top-20':houseType!=''?false:true}" class="footer" >
                     <span @click="goMap"><i class="iconfont icon-dizhi place"></i> {{info.address}}</span>
                     <!-- <span>
                       <button :id="info.id" class="share-button" open-type="share" @click="goShare"><i class="iconfont icon-msnui-share forward"></i> {{info.forwardCount}}</button>
@@ -32,7 +32,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 </template>
 
@@ -46,7 +46,7 @@ export default {
     info: {
       type: Object,
       default: {
-        id:0,
+        id: 0,
         title: "",
         address: "",
         viewC: 0,
@@ -67,18 +67,18 @@ export default {
     },
     houseType: {
       type: String,
-      default: "楼房布局"
+      default: ""
     }
   },
   computed: {
     setMark() {
       return (this.info.mark / 10).toFixed(1);
     },
-    setImg(){
+    setImg() {
       if (this.info.img) {
         let imgs = this.info.img.split("|");
         return this.$store.state.BASE_HOST + imgs[0];
-      }else{
+      } else {
         return "";
       }
     }
@@ -111,7 +111,7 @@ export default {
       });
     },
     onClick() {
-      this.$emit("onClick",this.info);
+      this.$emit("onClick", this.info);
     }
   }
 };
@@ -121,6 +121,8 @@ export default {
 .card-box {
   position: relative;
   margin: 25rpx 0;
+  height: 128px;
+  width: 100%;
   .card-content {
     box-shadow: 0 0 5rpx 5rpx #e5e9ef;
     border-radius: 25rpx;
@@ -128,9 +130,11 @@ export default {
     justify-content: space-between;
     .card-cover {
       margin: 14rpx 17rpx;
+      height: 112px;
+      width: 112px;
       img {
-        height: 100%;
-        width: 240rpx;
+        height: inherit;
+        width: inherit;
         background: gray;
         border-radius: 30rpx;
       }
