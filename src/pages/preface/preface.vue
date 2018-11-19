@@ -221,7 +221,9 @@ export default {
       },
       () => {
         me.pid = cover.coverId;
-        me.coverurl = api.BASE_HOST + cover.img.split("|")[1];
+        if (cover.img && cover.img.split("|").length >= 2) {
+          me.coverurl = api.BASE_HOST + cover.img.split("|")[1];
+        }
         me.favorite = false;
         if (this.$store.state.USER_INFO != null) {
           api.simLogin(logRes => {
@@ -344,7 +346,9 @@ export default {
       api.findDevisionAndParams(me.coverId, 0, res => {
         if (res.success) {
           if (res.data.length == 0) {
-            console.log("------------THIS PREFACE DEVISION DO NOT HAS ANY PARAMS---------------");
+            console.log(
+              "------------THIS PREFACE DEVISION DO NOT HAS ANY PARAMS---------------"
+            );
             return;
           }
           let params = res.data[0].params;

@@ -1,9 +1,11 @@
 import store from "@/store.js"
 
-const base = 'http://192.168.31.252:30080';
-// const base = "https://www.eagleshing.com"
+// const base = 'http://192.168.31.252:30080';
+// const base = "http://localhost:8091"
+const base = "https://www.eagleshing.com"
 
 const host = base + '/eagleeyes-mini-3.0';
+// const host = base;
 
 function request(method, url, data, callback, complete) {
   wx.request({
@@ -42,7 +44,7 @@ function request(method, url, data, callback, complete) {
 }
 
 export default {
-  BASE_HOST: base + '/eagleeyes-mini-3.0/api/file/downloadFile/',
+  BASE_HOST: "http://image.eagleshing.com" + '/eagleeyes-mini-3.0/api/file/downloadFile/',
   getUserInfo(callback) {
     console.log("GETTING USER INFO...");
     wx.getUserInfo({
@@ -235,11 +237,22 @@ export default {
   getHomeBlocks(callback) {
     request("GET", "/post/homeblocks", null, callback)
   },
+  getHomeBlockByType(type,callback){
+    request("GET","/post/findblock",{blockType:type},callback);
+  },
+  getHomeBlockByTypeAndTitle(type,title,callback){
+    request("GET","/post/findblockbytypeandtype",{blockType:type,title:title},callback);
+  },
   getHomeCovers(page, size, callback) {
     request("GET", "/post/homecovers", {
       page: page,
       size: size
     }, callback)
+  },
+  addLinkView(id,callback){
+    request("GET","/post/articlelinkviewadd",{id:id},callback);
+  },
+  findCoverByPrice(price,page,size,callback){
+    request('GET',"/post/findCoverByPrice",{price:price,page:page,size:size},callback)
   }
-
 }

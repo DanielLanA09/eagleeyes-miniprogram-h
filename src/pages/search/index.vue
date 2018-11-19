@@ -10,20 +10,25 @@
               </div>
             </div>
         </div>
-        <div class="h-padding-34 hot-key" v-if="showHotKey">
-            <div class="hot-title">热门搜索</div>
-            <notation :width="150" :list="list" :marginRight="10" :fontColor="'rgb(75,206,175)'" :clickable=false :isNonBack=true @onClick="onNotationClick"></notation>
+        <div class="switch">
+          <div class="item" :class="{active:articleSwitch==1?true:false}" @click="articleSwitch=1">小区</div>
+          <div class="item" :class="{active:articleSwitch==2?true:false}" @click="articleSwitch=2">文章</div>
         </div>
-        <div>
+        <div class="h-padding-34 hot-key" v-if="articleSwitch==1&&showHotKey">
+            <div class="hot-title">热门楼盘</div>
+            <notation :width="150" :list="list" @onClick="onNotationClick" :marginRight="10" :backgroundColor="'rgba(245,245,245,1)'" :fontColor="'rgba(51,51,51,1)'" :clickable=false :isNonBack=true :borderColor="'rgba(245,245,245,1)'"></notation>
+        </div>
+        <div class="h-padding-34 hot-key" v-if="articleSwitch==2">
+            <div class="hot-title">热门文章</div>
+            <div class="subtitle" v-for="(l,k) in blockArticle.links" :key="k" @click="onAritcleClick(l)">{{l.title}}</div>
+        </div>
+        <div v-if="articleSwitch==1">
           <!-- 当没有结果时 -->
           <div v-if="!showResult" class="search-noresult">
             <div class="h-padding-34 info" >
               <i class="iconfont icon-wu" ></i>
               <span>暂未搜索到~</span>
             </div>
-            <!-- <div class="h-padding-34" style="margin:32rpx 0;">
-              <input class="expected" type="text" placeholder="请输入您想看的楼盘，我们会尽快为您采集">
-            </div> -->
             <div class="h-padding-34 recommend">
               <div style="font-size:36rpx;">推荐楼盘</div>
               <div v-for="(r,k) in recommenList" :key="k">
@@ -58,10 +63,15 @@ export default {
     notation,
     gCard
   },
-  onLoad(){
+  onLoad() {
     this.keyword = "";
-    this.searchList =[];
-    this.recommenList=[];
+    this.searchList = [];
+    this.recommenList = [];
+    api.getHomeBlockByType("HOT", res => {
+      if (res.data[0]) {
+        this.blockArticle = res.data[0];
+      }
+    });
   },
   data() {
     return {
@@ -70,49 +80,49 @@ export default {
           tagName: "世纪城",
           value: "世纪城",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         },
         {
           tagName: "碧海花园",
           value: "碧海花园",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         },
         {
           tagName: "会展城(A区)",
           value: "会展城",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         },
         {
           tagName: "会展城(B区)",
           value: "会展城",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         },
         {
           tagName: "金华园",
           value: "金华园",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         },
         {
           tagName: "美的林城",
           value: "林城时代",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         },
         {
           tagName: "新世界",
           value: "新世界",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         },
         {
           tagName: "中铁逸都",
           value: "中铁逸都",
           active: false,
-          tagType: 'ADVANTAGE'
+          tagType: "ADVANTAGE"
         }
       ],
       showHotKey: true,
@@ -121,32 +131,29 @@ export default {
       searchList: [],
       recommenList: [],
       searchWord: "搜索",
-      showDelete:false,
-      cpage:-1,
-      _cpage:-1
+      showDelete: false,
+      cpage: -1,
+      _cpage: -1,
+      articleSwitch: 1,
+      blockArticle: {
+        links: []
+      }
     };
   },
-  computed:{
-    setKeyword(){
-      if(this.keyword==""){
+  computed: {
+    setKeyword() {
+      if (this.keyword == "") {
         this.showHotKey = true;
         this.showResult = true;
         this.showDelete = false;
         this.searchList = [];
         this.recommenList = [];
-      }else{
+      } else {
         this.showDelete = true;
       }
     }
   },
-  onReachBottom() {
-    // let me = this;
-    // if(!this.showResult){
-    //   this.searchRecommend(me)
-    // }else{
-    //   this.searchResponse(this.keyword);
-    // }
-  },
+  onReachBottom() {},
   methods: {
     fresh() {
       wx.pageScrollTo({
@@ -154,15 +161,35 @@ export default {
         duration: 1000
       });
     },
-    goView(e){
-      this.$store.commit('SET_CURRENT_COVER',e);
+    onAritcleClick(i) {
+      console.log(i);
+      if (i.linkType == "PUBLIC_ARTICLE") {
+        wx.navigateTo({
+          url: "/pages/blog/main?url=" + i.link
+        });
+      } else {
+        api.findCoversByTitle(i.title, res => {
+          if (!res.success || res.data.length == 0) {
+            console.log("DID NOT FOUND THIS ARTICLE");
+            return;
+          }
+          this.$store.commit("SET_CURRENT_COVER", res.data[0]);
+          api.addViewPoint(res.data[0].coverId);
+          wx.navigateTo({
+            url: "/pages/preface/main?id=" + res.data[0].coverId
+          });
+        });
+      }
+    },
+    goView(e) {
+      this.$store.commit("SET_CURRENT_COVER", e);
       api.addViewPoint(e.coverId);
       wx.navigateTo({
-        url: '/pages/preface/main?id='+e.coverId
+        url: "/pages/preface/main?id=" + e.coverId
       });
     },
-    deleteKeyword(){
-      this.keyword ="";
+    deleteKeyword() {
+      this.keyword = "";
     },
     goHome(value) {
       wx.navigateTo({
@@ -174,10 +201,10 @@ export default {
         title: info //页面标题为路由参数
       });
       let me = this;
-      if(me.cpage==-2){
+      if (me.cpage == -2) {
         return;
       }
-      if(me.cpage==-1){
+      if (me.cpage == -1) {
         me.searchList = [];
       }
       me.cpage++;
@@ -186,8 +213,8 @@ export default {
         mask: true
       });
 
-      api.findCoversByTitle(info,res=>{
-        if(res.success){
+      api.findCoversByTitle(info, res => {
+        if (res.success) {
           wx.hideLoading();
           if (res.data.length == 0) {
             me.showResult = false;
@@ -199,13 +226,13 @@ export default {
           }
           this.searchList = res.data;
         }
-      })
+      });
     },
     searchRecommend(me) {
-      if(me._cpage==-2){
+      if (me._cpage == -2) {
         return;
       }
-      if(me._cpage==-1){
+      if (me._cpage == -1) {
         me.recommenList = [];
       }
       me._cpage++;
@@ -213,42 +240,33 @@ export default {
         title: "加载中",
         mask: true
       });
-      api.findCoversByTitle("世纪城",res=>{
-        if(res.success){
+      api.findCoversByTitle("世纪城", res => {
+        if (res.success) {
           me.recommenList = res.data;
           wx.hideLoading();
         }
-      })
-      // wx.request({
-      //   header: { "content-type": "application/json" },
-      //   url: api.getURL("posts/search"),
-      //   data: {
-      //     keyword: "",
-      //     page: me._cpage,
-      //     size: 7
-      //   },
-      //   success: function(r) {
-      //     let data = r.data.data;
-      //     console.log(data)
-      //     if(data.last){
-      //       me._cpage=-2;
-      //     }
-      //     me.recommenList = me.recommenList.concat(data.content);
-      //     setTimeout(() => {
-      //         wx.hideLoading();
-      //       }, 500);
-      //   }
-      // });
+      });
     },
     onNotationClick(info) {
-      this.cpage=-1;
+      this.cpage = -1;
       this.searchResponse(info.value);
       this.keyword = info.value;
+      info.active = true;
     },
     onConfirm() {
-      this.cpage=-1;
-      this._cpage=-1;
-      this.searchResponse(this.keyword);
+      this.cpage = -1;
+      this._cpage = -1;
+      let type = "HOT";
+      if (this.articleSwitch == 1) {
+        this.searchResponse(this.keyword);
+      } else {
+        if (this.keyword.length > 0) {
+          type = "ARTICLE";
+        }
+        api.getHomeBlockByTypeAndTitle(type, this.keyword, res => {
+          this.blockArticle = res.data[0];
+        });
+      }
     }
   }
 };
@@ -265,6 +283,23 @@ export default {
   font-size: 28rpx;
   padding: 0 40rpx;
   -webkit-appearance: none;
+}
+.switch {
+  padding: 25rpx 158rpx;
+  display: flex;
+  justify-content: space-between;
+  border-top: solid 2px rgba(245, 245, 245, 1);
+  border-bottom: solid 2px rgba(245, 245, 245, 1);
+  margin-top: 20rpx;
+  .item {
+    font-size: 30rpx;
+    font-family: PingFang SC;
+    font-weight: 400;
+    color: rgba(51, 51, 51, 1);
+  }
+  .item.active {
+    border-bottom: solid 2px rgba(51, 51, 51, 1);
+  }
 }
 .search-block {
   position: relative;
@@ -301,7 +336,7 @@ export default {
     left: 34rpx;
     color: #cecece;
   }
-  .icon-quxiao{
+  .icon-quxiao {
     position: absolute;
     top: 19rpx;
     right: 120rpx;
@@ -311,11 +346,24 @@ export default {
 }
 .hot-key {
   .hot-title {
-    font-size: 24rpx;
+    font-size: 32rpx;
     color: rgb(68, 72, 78);
     margin-top: 48rpx;
     margin-bottom: 30rpx;
-    margin-left: 20rpx;
+    margin-left: 32rpx;
+    font-weight: 600;
+  }
+  .subtitle {
+    font-size: 26rpx;
+    font-family: PingFang SC;
+    font-weight: 400;
+    color: rgba(51, 51, 51, 1);
+    opacity: 1;
+    padding-left: 32rpx;
+    margin-top: 50rpx;
+  }
+  .subtitle:first-child {
+    margin-top: 0;
   }
 }
 .search-noresult {

@@ -59,7 +59,6 @@ export default {
               that.favoriteList = [];
             }
             that.favoriteList = favoRes.data.covers;
-            
           }
         });
       }
@@ -71,7 +70,7 @@ export default {
         this.$store.commit("SET_CURRENT_COVER", e);
         api.addViewPoint(e.coverId);
         wx.navigateTo({
-          url: "/pages/preface/main"
+          url: "/pages/preface/main?id=" + e.coverId
         });
       } else {
         if (e.checked) {
@@ -86,11 +85,11 @@ export default {
         }
       }
     },
-    goHome(){
-      console.log('sdfdf');
-      
+    goHome() {
+      console.log("sdfdf");
+
       wx.switchTab({
-        url:"/pages/home/main"
+        url: "/pages/home/main"
       });
     },
     onDelete() {

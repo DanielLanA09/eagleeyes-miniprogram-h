@@ -1,150 +1,179 @@
-.eagle-mask{
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 20;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.eagle-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.eagle-border-top-hr{
-    border-top: solid 14rpx rgb(245, 246, 248);
+
+.eagle-border-top-hr {
+  border-top: solid 14rpx rgb(245, 246, 248);
 }
-.eagle-bottommask{
-    height: 71rpx;
-    position: absolute;
-    bottom: 0;
-    left: 32rpx;
-    right: 32rpx;
+
+.eagle-bottommask {
+  height: 71rpx;
+  position: absolute;
+  bottom: 0;
+  left: 32rpx;
+  right: 32rpx;
 }
-.eagle-font-mini-20{
-    font-size: 20rpx;
-    color: rgb(128, 128, 128);
-    padding: 10rpx 0;
+
+.eagle-font-mini-20 {
+  font-size: 20rpx;
+  color: rgb(128, 128, 128);
+  padding: 10rpx 0;
 }
-.eagle-font-mini{
-    font-size: 22rpx;
-    color: rgb(128, 128, 128);
-    padding: 10rpx 0;
+
+.eagle-font-mini {
+  font-size: 22rpx;
+  color: rgb(128, 128, 128);
+  padding: 10rpx 0;
 }
-.eagle-font-normal{
-    font-size: 24rpx;
-    color: rgb(75, 75, 75);
+
+.eagle-font-normal {
+  font-size: 24rpx;
+  color: rgb(75, 75, 75);
 }
-.eagle-font-normal-26{
-    font-size: 26rpx;
-    color: rgb(75, 75, 75);
+
+.eagle-font-normal-26 {
+  font-size: 26rpx;
+  color: rgb(75, 75, 75);
 }
-.eagle-font-20-gray{
-    font-size: 20rpx;
-    color: rgb(128, 128, 128);
+
+.eagle-font-20-gray {
+  font-size: 20rpx;
+  color: rgb(128, 128, 128);
 }
-.eagle-font-22-gray{
-    font-size: 22rpx;
-    color: rgb(128, 128, 128);
+
+.eagle-font-22-gray {
+  font-size: 22rpx;
+  color: rgb(128, 128, 128);
 }
-.eagle-font-24-gray{
-    font-size: 24rpx;
-    color: rgb(128, 128, 128);
+
+.eagle-font-24-gray {
+  font-size: 24rpx;
+  color: rgb(128, 128, 128);
 }
-.eagle-font-26-gray{
-    font-size: 26rpx;
-    color: rgb(128, 128, 128);
+
+.eagle-font-26-gray {
+  font-size: 26rpx;
+  color: rgb(128, 128, 128);
 }
-.eagle-font-20-black{
-    font-size: 20rpx;
-    color:  rgb(0, 0, 0);
+
+.eagle-font-20-black {
+  font-size: 20rpx;
+  color: rgb(0, 0, 0);
 }
-.eagle-font-22-black{
-    font-size: 22rpx;
-    color:  rgb(0, 0, 0);
+
+.eagle-font-22-black {
+  font-size: 22rpx;
+  color: rgb(0, 0, 0);
 }
-.eagle-font-24-black{
-    font-size: 24rpx;
-    color: rgb(0, 0, 0);
+
+.eagle-font-24-black {
+  font-size: 24rpx;
+  color: rgb(0, 0, 0);
 }
-.eagle-font-20-green{
-    font-size: 20rpx;
-    color: rgb(50, 187, 143);
+
+.eagle-font-20-green {
+  font-size: 20rpx;
+  color: rgb(50, 187, 143);
 }
-.eagle-font-24-green{
-    font-size: 24rpx;
-    color: rgb(50, 187, 143);
+
+.eagle-font-24-green {
+  font-size: 24rpx;
+  color: rgb(50, 187, 143);
 }
-.eagle-font-26-green{
-    font-size: 26rpx;
-    color: rgb(50, 187, 143);
+
+.eagle-font-26-green {
+  font-size: 26rpx;
+  color: rgb(50, 187, 143);
 }
-.eagle-font-underline{
-    border-bottom: solid 1px rgb(128, 128, 128);
-    padding-bottom: 10rpx;
+
+.eagle-font-underline {
+  border-bottom: solid 1px rgb(128, 128, 128);
+  padding-bottom: 10rpx;
 }
-.eagle-font-title-green{
-    font-size: 32rpx;
-    color: rgb(50, 187, 143);
+
+.eagle-font-title-green {
+  font-size: 32rpx;
+  color: rgb(50, 187, 143);
 }
-.e-center{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+
+.e-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.h-left{
-    display: flex;
-    justify-content: flex-start;
+
+.h-left {
+  display: flex;
+  justify-content: flex-start;
 }
-.h-between{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+
+.h-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
-.flex{
-    display: flex;
+
+.flex {
+  display: flex;
 }
-.e-margin-top-10{
+
+.e-margin-top-10 {
   margin-top: 10rpx;
 }
-.e-margin-top-20{
+
+.e-margin-top-20 {
   margin-top: 20rpx;
 }
-.e-margin-top-30{
-    margin-top: 30rpx;
+
+.e-margin-top-30 {
+  margin-top: 30rpx;
 }
-.e-margin-bottom-30{
-    margin-bottom: 30rpx;
+
+.e-margin-bottom-30 {
+  margin-bottom: 30rpx;
 }
+
 .h-padding-34 {
-    padding: 0 34rpx;
+  padding: 0 34rpx;
 }
 
-.eagle-box-shadow{
-    box-shadow: 0 0 5rpx 5rpx rgba(145, 161, 189, 0.5);
+.eagle-box-shadow {
+  box-shadow: 0 0 5rpx 5rpx rgba(145, 161, 189, 0.5);
 }
 
-.eagle-box-shadow-down{
-    box-shadow: 0 2rpx 2rpx 2rpx rgba(145, 161, 189, 0.4);
+.eagle-box-shadow-down {
+  box-shadow: 0 2rpx 2rpx 2rpx rgba(145, 161, 189, 0.4);
 }
 
-.eagle-fontffamily{
-    font-family: "PinFang SC"
+.eagle-fontffamily {
+  font-family: "PinFang SC"
 }
+
 .eagle-button {
-    border-radius: 50px;
-    width: 78px;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-    font-size: 16px;
-    color: rgb(51, 51, 51);
-    box-shadow: 0 0 5rpx 5rpx rgba(145, 161, 189, 0.5);
-    font-weight: 500;
-  }
-  .eagle-card{
-    box-shadow: 0 0 5rpx 5rpx #e5e9ef;
-    border-radius: 25rpx;
-    margin: 4px 8px;
-  }
+  border-radius: 50px;
+  width: 78px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 16px;
+  color: rgb(51, 51, 51);
+  box-shadow: 0 0 5rpx 5rpx rgba(145, 161, 189, 0.5);
+  font-weight: 500;
+}
+
+.eagle-card {
+  box-shadow: 0 0 5rpx 5rpx #e5e9ef;
+  border-radius: 25rpx;
+  margin: 4px 8px;
+}

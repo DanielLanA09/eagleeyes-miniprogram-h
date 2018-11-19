@@ -17,14 +17,17 @@
           <div class="item">
             <label for="downpayment">首付：</label>
             <input type="number" id="downpayment"  placeholder-style="text-align:center;" class="input" v-model.number="downPayment">
-          </div>
-          <div class="item">
-            <label for="downpayment">面积：</label>
-            <input type="number" id="area"  placeholder-style="text-align:center;" class="input" v-model.number="area">
+            <span class="unit">万</span>
           </div>
           <div class="item">
             <label for="downpayment">月供：</label>
             <input type="number" id="monthpay"  placeholder-style="text-align:center;" class="input"  v-model.number="monthPay">
+            <span class="unit">元</span>
+          </div>
+          <div class="item">
+            <label for="downpayment">面积：</label>
+            <input type="number" id="area"  placeholder-style="text-align:center;" class="input" v-model.number="area">
+            <span class="unit">平米</span>
           </div>
           <div class="input-button" :class="{active:isActive}" @click="startPlan">开始规划</div>
         </div>
@@ -41,23 +44,27 @@
         </div>
         <div class="plan">
           <div class="left">
-            <div>
-              <span class="title">首付：</span>
-              <span class="pinkfont">{{downPayment}}万</span>
+            <div class="flex-inline">
+              <div class="input-title">首付：</div>
+              <div class="pinkfont"><input class="cus-input" type="number" v-model="downPayment"></div>
+              <div class="pinkfont">万</div>
             </div>
-            <div class="margin23">
-              <span class="title">月供：</span>
-              <span class="grayfont">{{monthPay}}元</span>
+            <div class="margin23 flex-inline">
+              <div class="input-title">月供：</div>
+              <div class="grayfont"><input class="cus-input" type="number" v-model="monthPay"></div>
+              <div class="grayfont">元</div>
             </div>
           </div>
           <div class="right">
-            <div >
-              <span class="title">总价：</span>
-              <span class="pinkfont">{{totalPrice}}万元</span>
+            <div class="flex-inline">
+              <div class="input-title">总价：</div>
+              <div class="pinkfont"><input class="cus-input disabled" type="number" v-model="totalPrice" disabled></div>
+              <div class="pinkfont">万元</div>
             </div>
-            <div class="margin23">
-              <span class="title">面积：</span>
-              <span class="grayfont">{{area}}元</span>
+            <div class="margin23 flex-inline">
+              <div class="input-title">面积：</div>
+              <div class="grayfont"><input class="cus-input" type="number" v-model="area"></div>
+              <div class="grayfont">平米</div>
             </div>
           </div>
         </div>
@@ -65,9 +72,6 @@
           <div class="item">
             <span class="key">单价</span>
             <span class="value">{{price}}元</span>
-            <!-- <picker @change="onUnitPriceChange" :range="priceRange" range-key="name" :value="unitPriceIndex">
-              <span class="value">{{priceRange[unitPriceIndex].value}}元<i class="iconfont icon-next"></i></span>
-            </picker> -->
           </div>
           <div class="item">
             <span class="key">还款方式</span>
@@ -104,8 +108,16 @@
             </picker>
           </div>
         </div>
-        <div>
-
+        <div class="cover-card">
+          <div class="cover-title">
+            <span class="subtitle1">符合您的楼盘</span>
+          </div>
+          <card v-for="(c,k) in cards" :key="k" :info="c" @onClick="onCardClick(c)"></card>
+        </div>
+      </div>
+      <div class="change" @click="backToTop" v-if="planStarted&&cards.length>0">
+        <div class="e-center content">
+            <i class="iconfont icon-dingbu-"></i>
         </div>
       </div>
   </div>
@@ -113,15 +125,19 @@
 
 <script>
 import api from "@/api";
+import card from "@/components/card/graphCard"
 export default {
+  components:{
+    card
+  },
   data: () => ({
     backUrl: require("@/assets/imgs/homeback.png"),
     userIcon: "",
     couldStart: false,
     planStarted: false,
-    downPayment: 30,
-    monthPay: 3000,
-    area: 120,
+    downPayment: null,
+    monthPay: null,
+    area: 100,
     CIR: 1,
     unitPriceIndex: 0,
     downPaymentIndex: 0,
@@ -133,6 +149,12 @@ export default {
     price: 0,
     level:"STANDARD",
     couldOffer:"HOUSE",
+    cards:[],
+    pageable:{
+      page:0,
+      size:5,
+      end:false
+    },
     priceRange: [
       {
         name: "6000元",
@@ -450,6 +472,7 @@ export default {
       }
     ]
   }),
+
   onLoad() {
     api.simLogin(logRes => {
       if (logRes.success) {
@@ -467,12 +490,39 @@ export default {
       }
     }
   },
+  watch:{
+    downPayment(nv,ol){
+      this.loanCalculate();
+    },
+    monthPay(nv,ol){
+      this.loanCalculate();
+    },
+    area(nv,ol){
+      this.loanCalculate();
+    }
+  },
+  onReachBottom(){
+    this.pageable.page++;
+    this.requestTestArticle();
+  },
   methods: {
     startPlan() {
       if (this.couldStart) {
         this.loanCalculate();
         this.planStarted = true;
       }
+    },
+    backToTop(){
+      wx.pageScrollTo({
+        scrollTop:0
+      })
+    },
+    onCardClick(e) {
+      this.$store.commit("SET_CURRENT_COVER", e);
+      api.addViewPoint(e.coverId);
+      wx.navigateTo({
+        url: "/pages/preface/main?id=" + e.coverId
+      });
     },
     setTitle() {
       let price = this.totalPrice;
@@ -514,22 +564,50 @@ export default {
     loanCalculate() {
       let monthMount = 12 * this.loanYearRange[this.loanYearIndex].value;
       let monthlyInterest = this.rateCalculate();
-      let loans =
-        this.monthPay *
-        (Math.pow(1 + monthlyInterest, monthMount) - 1) /
-        (monthlyInterest * Math.pow(1 + monthlyInterest, monthMount)); // loans
-      let totalPrice = (this.downPayment * 10000 + loans).toFixed(2); //Total price
+      let loans = this.monthPay *(Math.pow(1 + monthlyInterest, monthMount) - 1) /(monthlyInterest * Math.pow(1 + monthlyInterest, monthMount)); // loans
+      let totalPrice = (this.downPayment * 10000 + loans); //Total price
+
       this.totalPrice = (totalPrice / 10000).toFixed(2);
       this.price = (totalPrice / this.area).toFixed(1); //Price
-      let percent = Number(this.downPayment * 10000 / totalPrice * 10);
+      let percent = Math.round(Number(this.downPayment * 10000 / totalPrice * 10));
+      console.log("THE LOAN PERCENT IS:",percent)
 
+      if(percent>8||percent<2){
+
+        return;
+      }
       this.downPaymentIndex = this.downPaymentRange.findIndex(
-        i => i.value == Math.round(percent)
+        i => i.value == percent
       );
       this.loanIndex = this.loanRange.findIndex(
-        i => i.value == 10 - Math.round(percent)
+        i => i.value == 10 - percent
       );
       this.setTitle();
+      this.initPage();
+      this.requestTestArticle();
+    },
+    calculateLoan(){
+      let monthMount = 12 * this.loanYearRange[this.loanYearIndex].value;
+      let monthlyInterest = this.rateCalculate();
+      return this.monthPay *(Math.pow(1 + monthlyInterest, monthMount) - 1) /(monthlyInterest * Math.pow(1 + monthlyInterest, monthMount)); // loans
+    },
+    initPage(){
+      this.pageable.page=0,
+      this.pageable.size=5,
+      this.pageable.end=false
+      this.cards = [];
+    },
+    requestTestArticle(){
+      if(this.pageable.end){
+        return;
+      }
+      api.findCoverByPrice(this.price,this.pageable.page*this.pageable.size,this.pageable.size,res=>{
+        if(res.data.length==0){
+          this.pageable.end = true;
+          return;
+        }
+        this.cards = this.cards.concat(res.data);
+      })
     },
     rateIndex(downpayPercent) {
       let index = this.downPaymentRange.findIndex(
@@ -560,11 +638,20 @@ export default {
       monthlyInterest = monthlyInterest * this.CIR / 12;
       return monthlyInterest;
     },
+    onParamChange(){
+      let loan = this.calculateLoan();
+      this.totalPrice = (this.downPayment*10000+loan)/10000
+      this.price = (this.totalPrice*10000/this.area).toFixed(2);
+      this.initPage();
+      this.requestTestArticle();
+    },
     onDownpayChange(i) {
       this.downPaymentIndex = i.mp.detail.value;
       let downPercent = this.downPaymentRange[this.downPaymentIndex].value;
       let loanPercent = 10 - downPercent;
       this.loanIndex = this.loanRange.findIndex(i => i.value == loanPercent);
+
+      this.onParamChange()
     },
     onLoanChange(i) {
       this.loanIndex = i.mp.detail.value;
@@ -573,19 +660,21 @@ export default {
       this.downPaymentIndex = this.downPaymentRange.findIndex(
         i => i.value == downPercent
       );
+
+      this.onParamChange()
     },
     onLoanWayChange(i) {
       this.loanWayIndex = i.mp.detail.value;
-      this.loanCalculate();
+      this.onParamChange()
     },
     onLoanYearChange(i) {
       this.loanYearIndex = i.mp.detail.value;
-      this.loanCalculate();
+      this.onParamChange()
     },
     onDiscountChange(i) {
       this.loanDiscountIndex = i.mp.detail.value;
       this.CIR = this.tradeDiscountRange[this.loanDiscountIndex].value;
-      this.loanCalculate();
+      this.onParamChange()
     }
   },
   mounted() {}
@@ -672,6 +761,12 @@ export default {
       top: 17rpx;
       left: 40rpx;
     }
+    .unit{
+      position: absolute;
+      top: 17rpx;
+      right: 40rpx;
+      font-size: 34rpx;
+    }
   }
   .input {
     width: 225rpx;
@@ -755,6 +850,10 @@ export default {
   padding: 45rpx 50rpx;
   border-top: solid 8rpx rgb(232, 234, 238);
   display: flex;
+  .flex-inline{
+    display: flex;
+    justify-items: baseline;
+  }
   .pinkfont {
     font-size: 30rpx;
     font-family: PingFang-SC-Heavy;
@@ -767,11 +866,20 @@ export default {
     font-weight: 500;
     color: rgba(101, 101, 101, 1);
   }
-  .title {
+  .input-title {
     font-size: 30rpx;
     font-family: PingFang-SC-Medium;
     font-weight: 500;
     color: rgba(101, 101, 101, 1);
+  }
+  .cus-input{
+    display: inline-block;
+    min-width: 35rpx;
+    max-width: 100rpx;
+    border-bottom: solid 1px rgb(232, 234, 238);
+  }
+  .cus-input.disabled{
+    border-bottom: none;
   }
   .left {
     width: 50%;
@@ -809,6 +917,36 @@ export default {
       display: inline-block;
       margin-left: 18rpx;
       font-size: 29rpx;
+    }
+  }
+}
+.cover-card{
+  padding: 8px 8px;
+  .cover-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    .subtitle1 {
+      font-size: 36rpx;
+      color: rgb(23, 51, 44);
+      font-weight: 600;
+    }
+  }
+}
+.change {
+  position: fixed;
+  right: 30rpx;
+  bottom: 100rpx;
+  background: white;
+  border-radius: 100%;
+  box-shadow: 0 0 5rpx 5rpx rgba(9, 48, 114, 0.1);
+  .content {
+    width: 84rpx;
+    height: 84rpx;
+    border-radius: 100%;
+    i {
+      font-size: 30px;
+      color: #808080;
     }
   }
 }

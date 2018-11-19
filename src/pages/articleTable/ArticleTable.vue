@@ -1,9 +1,9 @@
 <template>
   <div class="gutter">
-    <div class="card" v-for="(l,k) in table.links" :key="k" @click="onClick">
+    <div class="card" v-for="(l,k) in links" :key="k" @click="onClick(l)">
       <div class="imgbox">
         <img :src="host+l.linkImg">
-        <span class="view"><i class="iconfont icon-liulan"></i> 3501人浏览过</span>
+        <span class="view"><i class="iconfont icon-liulan"></i> {{l.view}}人浏览过</span>
       </div>
       <div class="title">{{l.title}}</div>
     </div>
@@ -15,15 +15,16 @@ import api from "@/api";
 export default {
   data: () => ({
     host: "",
-    table: {}
+    links: []
   }),
   onLoad() {
+    this.links=[];
     this.host = api.BASE_HOST;
-    this.table = this.$store.state.ARTICLE_TABLE;
-    if (!this.table.links.length || this.table.links.length == 0) {
+    let block = this.$store.state.ARTICLE_TABLE;
+    if (block.links.length==0) {
       wx.showModal({
         title: "提示",
-        content: "暂时没有内容，敬请期待！",
+        content: "暂时没有内容，我们的文案伙伴们会尽快推送，敬请期待！",
         showCancel: false,
         success() {
           wx.navigateBack({
@@ -31,12 +32,19 @@ export default {
           });
         }
       });
+      return;
+    }
+    this.links = block.links;
+    if (this.links.length == 0) {
     }
     console.log(this.$store.state.ARTICLE_TABLE);
-    wx.setNavigationBarTitle(this.table.name);
+    wx.setNavigationBarTitle({
+      title: this.$store.state.ARTICLE_TABLE.name
+    });
   },
   methods: {
     onClick(i) {
+      api.addLinkView(i.linkId);
       if (i.linkType == "PUBLIC_ARTICLE") {
         wx.navigateTo({
           url: "/pages/blog/main?url=" + i.link
@@ -44,7 +52,11 @@ export default {
       } else {
         api.findCoversByTitle(i.title, res => {
           if (!res.success || res.data.length == 0) {
-            console.log("DID NOT FOUND THIS ARTICLE");
+            wx.showModal({
+              title: "提示",
+              content:
+                "《" + i.title + "》" + " 这边文章文案正在准备中，敬请期待！"
+            });
             return;
           }
           this.$store.commit("SET_CURRENT_COVER", res.data[0]);
@@ -98,14 +110,14 @@ export default {
   }
   .title {
     height: 44rpx;
-    font-size: 32rpx;
+    font-size: 28rpx;
     font-family: PingFang SC;
     font-weight: 500;
     line-height: 44rpx;
     color: rgba(51, 51, 51, 1);
     opacity: 1;
     padding-left: 40rpx;
-    padding-top: 15rpx;
+    padding-top: 10rpx;
   }
 }
 </style>

@@ -1,17 +1,15 @@
 <template>
   <div>
-    <div class="search">
+    <div class="input-block">
       <input type="text" class="width-full input" placeholder="搜索小区、楼盘、地区" @focus="onSearchFocus">
     </div>
-    <div class="swiper">
-      <swiper indicator-dots="true" autoplay="true">
-        <swiper-item class="swiper-item" v-for="(L,K) in swiperItems[0].links" :key="K" @click="onSwiperClick(L)">
-          <img :src="host+L.linkImg">
-        </swiper-item>
-      </swiper>
-    </div>
+    <swiper class="swiper" indicator-dots="true" autoplay="true">
+      <swiper-item class="swiper-item" v-for="(L,K) in swiperItems.links" :key="K" @click="onSwiperClick(L)">
+        <img :src="host+L.linkImg">
+      </swiper-item>
+    </swiper>
     <div class="func">
-      <div class="button">
+      <div class="button" @click="onTest">
         <img :src="testUrl">
         <div class="button-name" >小区测评</div>
       </div>
@@ -51,8 +49,8 @@
             <div class="subtitle2" @click="hotMore">更多>></div>
           </div>
           <scroll-view class="scroll-box" :scroll-x="true" >
-              <div class="card" v-for="(h,k) in hots[0].links" :key="k">
-                  <img :src="host+h.linkImg" alt="">
+              <div class="card" v-for="(h,k) in hots.links" :key="k" @click="onSwiperClick(h)">
+                  <img :src="host+h.linkImg">
                   <div class="info">
                       <div class="name">{{h.title}}</div>
                   </div>
@@ -63,10 +61,15 @@
     <div class="test">
       <div class="title">
         <span class="subtitle1">小区测评</span>
-        <span class="subtitle2">更多>></span>
+        <span class="subtitle2" @click="onTest">更多>></span>
       </div>
       <div class="cards">
-        <card v-for="(c,k) in coverList" :key="k" :info="c" @onClick="onCardClick"></card>
+        <card v-for="(c,k) in coverList" :key="k" :info="c" @onClick="onCardClick(c)"></card>
+      </div>
+    </div>
+    <div class="change" @click="backTop">
+      <div class="e-center content">
+          <i class="iconfont icon-dingbu-"></i>
       </div>
     </div>
   </div>
@@ -86,11 +89,15 @@ export default {
     compareUrl: require("@/assets/icons/compare.png"),
     recommendUrl: require("@/assets/icons/recommend.png"),
     askUrl: require("@/assets/icons/ask.png"),
-    swiperItems: {},
+    swiperItems: {
+      links: []
+    },
     bodyBlocks1: {},
     bodyBlocks2: {},
     bodyBlocks3: {},
-    hots: [],
+    hots: {
+      links: []
+    },
     coverList: [],
     pageable: {
       page: 0,
@@ -98,12 +105,29 @@ export default {
       end: false
     }
   }),
+  onShareAppMessage: function(option) {
+    let me = this;
+    return {
+      title: "基于大数据的二手房小区测评",
+      path: "/pages/home/main",
+      imageUrl: require("../../../static/imgs/小程序封面.png")
+    };
+  },
   onLoad() {
     this.pageable.end = false;
     this.pageable.page = 0;
     api.getHomeBlocks(res => {
-      this.swiperItems = res.data.filter(i => i.blockType == "SWIPER");
+      if (!res.data.length || res.data.length == 0) {
+        return;
+      }
+      this.swiperItems = res.data.filter(i => i.blockType == "SWIPER")[0];
+      if (!this.swiperItems.links) {
+        this.swiperItems.links = [];
+      }
       let bodys = res.data.filter(i => i.blockType == "BODY");
+      bodys.sort((a, b) => {
+        a.position - b.position;
+      });
       for (let i = 0; i < bodys.length; i++) {
         if (i == 0) {
           this.bodyBlocks1 = bodys[i];
@@ -113,7 +137,11 @@ export default {
           this.bodyBlocks3 = bodys[i];
         }
       }
-      this.hots = res.data.filter(i => i.blockType == "HOT");
+      this.hots = res.data.filter(i => i.blockType == "HOT")[0];
+      if (!this.hots) {
+        this.hots = {};
+        this.hots.links = [];
+      }
     });
     this.getHomeCovers();
   },
@@ -122,25 +150,38 @@ export default {
     this.getHomeCovers();
   },
   methods: {
+    backTop() {
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 1000
+      });
+    },
     getHomeCovers() {
       if (this.pageable.end) {
         return;
       }
-      api.getHomeCovers(this.pageable.page, this.pageable.size, res => {
-        if (res.data.length == 0) {
-          this.pageable.end = true;
-          return;
+      api.getHomeCovers(
+        this.pageable.page * this.pageable.size,
+        this.pageable.size,
+        res => {
+          if (res.data.length == 0) {
+            this.pageable.end = true;
+            return;
+          }
+          this.coverList = this.coverList.concat(res.data);
         }
-        this.coverList = this.coverList.concat(res.data);
-      });
+      );
     },
-    onMainBodyClick(bodyBlock){
-      this.$store.commit("SET_ARTICLE_TABLE",bodyBlock);
-      this.navigateTo("/pages/articleTable/main")
+    onMainBodyClick(bodyBlock) {
+      this.$store.commit("SET_ARTICLE_TABLE", bodyBlock);
+      // let list = api.
+      this.navigateTo("/pages/articleTable/main");
     },
     hotMore() {
-      this.$store.commit("SET_ARTICLE_TABLE", this.hots[0]);
-      this.navigateTo("/pages/articleTable/main");
+      api.getHomeBlockByType("ARTICLE", res => {
+        this.$store.commit("SET_ARTICLE_TABLE", res.data[0]);
+        this.navigateTo("/pages/articleTable/main");
+      });
     },
     navigateTo(path) {
       wx.navigateTo({
@@ -156,6 +197,9 @@ export default {
     onCompare() {
       this.navigateTo("/pages/compare/main");
     },
+    onTest() {
+      this.navigateTo("/pages/testArticles/main");
+    },
     onAsk() {
       wx.showModal({
         title: "提示",
@@ -163,14 +207,22 @@ export default {
       });
     },
     onSwiperClick(el) {
+      api.addLinkView(el.linkId);
       if (el.linkType == "PUBLIC_ARTICLE") {
-        this.navigateTo("/pages/blog/main?url=" + el.link);
+        if (el.link) {
+          this.navigateTo("/pages/blog/main?url=" + el.link);
+        }
       } else {
         api.findCoversByTitle(el.title, res => {
           if (!res.success || res.data.length == 0) {
-            console.log("DID NOT FOUND THIS ARTICLE");
+            wx.showModal({
+              title: "提示",
+              content:
+                "《" + el.title + "》" + " 这边文章文案正在准备中，敬请期待！"
+            });
             return;
           }
+
           this.$store.commit("SET_CURRENT_COVER", res.data[0]);
           api.addViewPoint(res.data[0].coverId);
           this.navigateTo("/pages/preface/main?id=" + res.data[0].coverId);
@@ -178,7 +230,11 @@ export default {
       }
     },
     onCardClick(e) {
-      this.navigateTo("/pages/preface/main?id=" + e.coverId);
+      this.$store.commit("SET_CURRENT_COVER", e);
+      api.addViewPoint(e.coverId);
+      wx.navigateTo({
+        url: "/pages/preface/main?id=" + e.coverId
+      });
     }
   },
   created() {},
@@ -187,6 +243,17 @@ export default {
 </script>
 
 <style scoped lang="less">
+.input-block {
+  padding: 10px;
+  .input {
+    background: rgb(245, 245, 245);
+    border-radius: 50px;
+    height: 32px;
+    padding-left: 40px;
+    font-size: 14px;
+  }
+}
+
 .search {
   padding: 4px 8px;
   .input {
@@ -198,36 +265,41 @@ export default {
   }
 }
 .swiper {
-  padding: 4px 8px;
+  padding: 20rpx 32rpx;
+  height: 260rpx;
+
   .swiper-item {
-    height: 131px;
-    width: 100%;
     img {
-      width: inherit;
-      height: inherit;
+      height: 260rpx;
+      width: 688rpx;
       border-radius: 5px;
     }
   }
 }
 .func {
-  padding: 4px 0px;
+  padding: 14rpx 0rpx;
   display: flex;
   justify-content: space-around;
   .button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     img {
       height: 90rpx;
       width: 90rpx;
       border-radius: 100%;
     }
     .button-name {
-      font-size: 11px;
+      font-size: 13px;
       color: rgb(23, 51, 44);
+      margin-top: 10rpx;
     }
   }
 }
 .body {
   display: flex;
-  padding: 16px 8px;
+  padding: 16px 32rpx;
   .title {
     font-size: 17px;
     font-weight: 600;
@@ -243,14 +315,14 @@ export default {
   }
   .left-block {
     position: relative;
-    width: 392rpx;
+    width: 296rpx;
     height: 308rpx;
     border-radius: 5px;
   }
   .right-block {
     width: 100%;
     height: 100%;
-    margin-left: 14rpx;
+    margin-left: 16rpx;
     .right-top {
       position: relative;
       width: 100%;
@@ -267,7 +339,7 @@ export default {
   }
 }
 .hot {
-  padding: 20px 8px;
+  padding: 20px 26rpx;
   border-top: solid 5px rgb(245, 245, 245);
   .title {
     display: flex;
@@ -285,12 +357,12 @@ export default {
     }
   }
   .scroll-box {
+    margin-top: 32rpx;
     display: flex;
     white-space: nowrap;
     .card {
       display: inline-block;
       margin: 10rpx 20rpx;
-      height: 352rpx;
       width: 400rpx;
       border-radius: 10rpx;
       padding: 0;
@@ -299,17 +371,22 @@ export default {
         height: 224rpx;
         width: inherit;
         background: gray;
+        border-radius: 10rpx;
         border-top-left-radius: 10rpx;
         border-top-right-radius: 10rpx;
       }
       .info {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        padding: 28rpx 18rpx;
+        padding: 0rpx 18rpx;
         .name {
           font-size: 28rpx;
-          font-weight: 600;
+          width: 364rpx;
+          height: 80rpx;
+          white-space: pre-wrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          margin-bottom: 10rpx;
         }
       }
     }
@@ -338,6 +415,23 @@ export default {
   .cards {
     margin-top: 20px;
     // height: 500px;
+  }
+}
+.change {
+  position: fixed;
+  right: 30rpx;
+  bottom: 100rpx;
+  background: white;
+  border-radius: 100%;
+  box-shadow: 0 0 5rpx 5rpx rgba(9, 48, 114, 0.1);
+  .content {
+    width: 84rpx;
+    height: 84rpx;
+    border-radius: 100%;
+    i {
+      font-size: 30px;
+      color: #808080;
+    }
   }
 }
 </style>

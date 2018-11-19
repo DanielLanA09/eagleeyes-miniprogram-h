@@ -4,9 +4,10 @@
             <div class="card-cover" @click="onClick()">
                 <img :src="setImg">
             </div>
-            <div class="content">
-                <div class="title" @click="onClick()">
+            <div class="content" :class="{active:houseType==''}">
+                <div class="title h-between" @click="onClick()">
                     <div class="title">{{info.title}}</div>
+                    <div class="price">￥{{info.price}}</div>
                 </div>
                 <div class="h-between" v-if="houseType!=''">
                     <div class="houstype">{{houseType}}<span class="mark"> {{setMark}}</span></div>
@@ -23,7 +24,7 @@
                         <word-tag :list="info.tags" availType="DISADVANTAGE" :title="'缺点'" :titleColor="'#ff8097'" :borderColor="'#ff8097'"></word-tag>
                     </div>
                 </div>
-                <div :class="{'e-margin-top-20':houseType!=''?false:true}" class="footer" >
+                <div :class="{'e-margin-top-20':houseType!=''?false:true,active:houseType==''}" class="footer" >
                     <span @click="goMap"><i class="iconfont icon-dizhi place"></i> {{info.address}}</span>
                     <!-- <span>
                       <button :id="info.id" class="share-button" open-type="share" @click="goShare"><i class="iconfont icon-msnui-share forward"></i> {{info.forwardCount}}</button>
@@ -194,6 +195,12 @@ export default {
           color: #b3b3b3;
         }
       }
+      .footer.active{
+        margin-top: 25rpx;
+      }
+    }
+    .content.active{
+      margin-top: 20rpx;
     }
   }
 }
