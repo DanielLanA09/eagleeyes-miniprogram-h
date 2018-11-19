@@ -174,7 +174,31 @@ export default {
     },
     onMainBodyClick(bodyBlock) {
       this.$store.commit("SET_ARTICLE_TABLE", bodyBlock);
-      // let list = api.
+      if (bodyBlock.links.length == 1) {
+        let i = bodyBlock.links[0];
+        if (i.linkType == "PUBLIC_ARTICLE") {
+          wx.navigateTo({
+            url: "/pages/blog/main?url=" + i.link
+          });
+        } else {
+          api.findCoversByTitle(i.title, res => {
+            if (!res.success || res.data.length == 0) {
+              wx.showModal({
+                title: "提示",
+                content:
+                  "《" + i.title + "》" + " 这边文章文案正在准备中，敬请期待！"
+              });
+              return;
+            }
+            this.$store.commit("SET_CURRENT_COVER", res.data[0]);
+            api.addViewPoint(res.data[0].coverId);
+            wx.navigateTo({
+              url: "/pages/preface/main?id=" + res.data[0].coverId
+            });
+          });
+        }
+        return;
+      }
       this.navigateTo("/pages/articleTable/main");
     },
     hotMore() {
