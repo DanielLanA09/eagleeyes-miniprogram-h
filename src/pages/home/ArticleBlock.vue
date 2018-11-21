@@ -225,10 +225,9 @@ export default {
       this.navigateTo("/pages/testArticles/main");
     },
     onAsk() {
-      wx.showModal({
-        title: "提示",
-        content: "功能开发中，敬请期待！"
-      });
+      wx.switchTab({
+        url:"/pages/userQuestion/main"
+      })
     },
     onSwiperClick(el) {
       api.addLinkView(el.linkId);

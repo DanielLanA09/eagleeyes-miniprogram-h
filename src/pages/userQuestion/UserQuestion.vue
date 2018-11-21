@@ -1,36 +1,45 @@
 <template>
   <div>
-    <div class="e-center">
-      <img class="cover-img" src="" alt="" srcset="">
-    </div>
-
-
+    <!-- <div class="e-center">
+      <img class="cover-img" :src="questionCover">
+    </div> -->
+    <swiper class="swiper" indicator-dots="true" autoplay="true">
+      <swiper-item class="swiper-item">
+        <img class="cover-img" :src="questionCover">
+      </swiper-item>
+    </swiper>
     <div class="e-center margin-top-32">
       <div class="input-block">
-        <textarea maxlength="-1" class="reply-text"></textarea>
+        <textarea maxlength="-1" class="reply-text" v-model="question.question" placeholder="请输入您的问题..."></textarea>
         <div class="input-footer">
-          <div class="h-center check">
+          <div class="h-center check" @click="isNameHidden">
             <div class="font-style1">匿名</div>
-            <span class="iconfont icon-duigou"></span>
+            <span class="iconfont icon-duigou" :class="{active:nameHidden}"></span>
           </div>
-          <div class="button-green">我要咨询</div>
+          <div class="button-green" @click="ask">我要咨询</div>
         </div>
       </div>
     </div>
     <div class="hot">热门 <span class="iconfont icon-arrow-left"></span></div>
     <div class="question-block">
-      <div class="card">
-        <div class="block-item">
+      <div class="card" v-for="(q,k) in hots" :key="k">
+        <div class="block-item top">
           <div class="tangent red">问</div>
-          <div class="content">你们觉得世纪城的龙会员的房子怎么样？有人了解嘛？想在哪里入手一套二手房，这个小程序准吗？</div>
+          <div class="content">{{q.question}}</div>
         </div>
         <div class="h-between">
-          <div class="asker">Linda</div>
-          <div class="asker">2018-07-15 14:30</div>
+          <div class="asker">{{q.asker}}</div>
+          <div class="asker">{{q.createdAt}}</div>
         </div>
-        <div class="block-item">
+        <div class="block-item" v-if="q.answers.length>0">
           <div class="tangent green">答</div>
-          <div class="content black">小程序写得蛮真实的，最大的问题就是小学困难，距离真心远，孩子上学要来回接送，仔细看看小程序，还是不错的，不过世纪城整体有点乱，还是好好。阿斯顿发顺丰asdfas 大撒发射点发。</div>
+          <div class="content black">
+            {{q.answers[0].reply}}
+            <div class="footer-user">
+              <div class="user-icon"><img src=""><span>{{q.answers[0].replier}}</span></div>
+              <div @click="onPointClick" class="point-block" :class="{active:isPointed}"><span class="iconfont icon-like active"></span><span class="points">{{points}}</span></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -40,8 +49,108 @@
 <script>
 import api from "@/api";
 export default {
-  data: () => ({}),
-  methods: {},
+  onLoad() {
+    this.USER = this.$store.state.USER_INFO;
+    this.findHotQuestions();
+  },
+  onReachBottom() {
+    this.pageable.page++;
+    if (!this.pageable.end) {
+      this.findHotQuestions();
+    }
+  },
+  computed: {
+    nameHidden() {
+      return this.question.isHidden;
+    },
+    isPointed() {
+      return this.pointed;
+    }
+  },
+  data: () => ({
+    host: "",
+    USER: null,
+    question: {
+      type: "COMMIT",
+      question: "",
+      isHidden: true
+    },
+    questionCover: require("@/assets/imgs/questioncover.jpg"),
+    pointed: false,
+    points: 5,
+    pageable: {
+      page: 0,
+      size: 5,
+      end: false
+    },
+    hots: []
+  }),
+  methods: {
+    isNameHidden() {
+      this.question.isHidden = !this.question.isHidden;
+    },
+    ask() {
+      if (this.USER == null) {
+        this.login(
+          success => {
+            this.commitQuestion();
+          },
+          fail => {
+            wx.showModal({
+              title: "提示",
+              content: "您必须登陆才可以咨询",
+              showCancel: false
+            });
+          }
+        );
+      } else {
+        this.commitQuestion();
+      }
+    },
+    login(success, fail) {
+      api.simLogin(res => {
+        if (res.success) {
+          this.USER = res.data;
+          success({ data: res.data });
+        } else {
+          fail({ data: res.data });
+        }
+      });
+    },
+    commitQuestion() {
+      this.question.userId = this.USER.userId;
+      api.commitQuestion(this.question, res => {
+        if (res.success) {
+          wx.showModal({
+            title: "提示",
+            content:
+              "我们已经收到您的提问，分析师会尽快为您解答，稍后请查看自己的提问。",
+            showCancel: false
+          });
+          this.question.question = "";
+        }
+      });
+    },
+    onPointClick() {
+      if (this.pointed) {
+        this.points--;
+        this.pointed = false;
+      } else {
+        this.points++;
+        this.pointed = true;
+      }
+    },
+    findHotQuestions() {
+      console.log("daljlasdfljla");
+      api.findUserQuestions(this.pageable, res => {
+        if (res.data.length == 0) {
+          this.pageable.end = true;
+          return;
+        }
+        this.hots = this.hots.concat(res.data);
+      });
+    }
+  },
   mounted() {}
 };
 </script>
@@ -49,6 +158,14 @@ export default {
 <style scoped lang="less">
 .margin-top-32 {
   margin-top: 32rpx;
+}
+
+.swiper {
+  height: 310rpx;
+  .swiper-item {
+    display: flex;
+    justify-content: center;
+  }
 }
 .cover-img {
   width: 714rpx;
@@ -140,18 +257,21 @@ export default {
 .question-block {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 .card {
   width: 720rpx;
-  height: 392rpx;
   background: rgba(252, 252, 252, 1);
   box-shadow: 0rpx 4rpx 20rpx rgba(0, 0, 0, 0.16);
   opacity: 1;
   border-radius: 30rpx;
+  margin-top: 32rpx;
   .block-item {
+    position: relative;
     display: flex;
     align-items: flex-start;
-    padding: 36rpx 16rpx 0 16rpx;
+    padding: 36rpx 16rpx 42rpx 16rpx;
     .tangent {
       width: 48rpx;
       height: 48rpx;
@@ -175,20 +295,14 @@ export default {
       font-size: 26rpx;
       font-family: PingFang SC;
       font-weight: 400;
-      line-height: 36rpx;
+      line-height: 34rpx;
       color: rgba(51, 51, 51, 1);
       opacity: 1;
       width: 624rpx;
-      height: 101rpx;
       margin-left: 16rpx;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-      overflow: hidden;
     }
     .content.black {
       background: rgba(242, 242, 242, 1);
-      opacity: 1;
       border-radius: 16rpx;
       padding: 16rpx 16rpx;
       font-size: 24rpx;
@@ -196,9 +310,41 @@ export default {
       font-weight: 400;
       color: rgba(51, 51, 51, 1);
       opacity: 1;
+      .footer-user {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16rpx;
+        color: rgba(205, 205, 205, 1);
+        .user-icon {
+          display: flex;
+          img {
+            width: 36rpx;
+            height: 36rpx;
+            background: rgba(0, 0, 0, 0);
+            border-radius: 50%;
+            opacity: 1;
+          }
+        }
+        .iconfont {
+          margin: 0 12rpx;
+          height: 34rpx;
+          line-height: 34rpx;
+        }
+        .points {
+          height: 34rpx;
+          line-height: 34rpx;
+        }
+
+        .point-block.active {
+          color: rgba(106, 223, 195, 1);
+        }
+      }
     }
   }
-  .h-between{
+  .block-item.top {
+    padding-bottom: 16rpx;
+  }
+  .h-between {
     padding-left: 96rpx;
     padding-right: 46rpx;
   }
@@ -209,5 +355,11 @@ export default {
     color: rgba(154, 154, 154, 1);
     opacity: 1;
   }
+}
+.card:first-child {
+  margin-top: 0;
+}
+.card:last-child {
+  margin-bottom: 32rpx;
 }
 </style>

@@ -14,10 +14,10 @@
                 <i class="iconfont icon-geren_shoucang title-icon"><span class="title">我的收藏</span></i>
                 <i class="iconfont icon-next right"></i>
             </div>
-            <div class="block" @click="navTo(1)">
+            <!-- <div class="block" @click="navTo(1)">
                 <i class="iconfont icon-geren_zuji title-icon"><span class="title">我的足迹</span></i>
                 <i class="iconfont icon-next right"></i>
-            </div>
+            </div> -->
             <div class="block" @click="navTo(2)">
                 <i class="iconfont icon-geren_fankui title-icon"><span class="title">意见反馈</span></i>
                 <i class="iconfont icon-next right"></i>

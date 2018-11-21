@@ -1,16 +1,14 @@
 import store from "@/store.js"
 
-// const base = 'http://192.168.31.252:30080';
+// const base = 'http://192.168.31.252:30080//eagleeyes-mini-3.0';
 // const base = "http://localhost:8091"
-const base = "https://www.eagleshing.com"
+const base = "https://www.eagleshing.com//eagleeyes-mini-3.0"
 
-const host = base + '/eagleeyes-mini-3.0';
-// const host = base;
 
 function request(method, url, data, callback, complete) {
   wx.request({
     method: method,
-    url: host + url,
+    url: base + url,
     data: data,
     header: {
       'content-type': 'application/json'
@@ -32,7 +30,7 @@ function request(method, url, data, callback, complete) {
       }
       callback({
         success: false,
-        data: res
+        data: null
       });
     },
     complete(res) {
@@ -145,7 +143,7 @@ export default {
   },
   upload(filePath, callback) {
     wx.uploadFile({
-      url: host + "/api/file/uploadFile",
+      url: base + "/file/uploadFile",
       filePath: filePath,
       name: "file",
       success(res) {
@@ -254,5 +252,11 @@ export default {
   },
   findCoverByPrice(price,page,size,callback){
     request('GET',"/post/findCoverByPrice",{price:price,page:page,size:size},callback)
+  },
+  commitQuestion(data,callback){
+    request("POST","/question/commit",data,callback)
+  },
+  findUserQuestions(pageable,callback){
+    request("GET","/question/questions",{page:pageable.page*pageable.size,size:pageable.size},callback)
   }
 }

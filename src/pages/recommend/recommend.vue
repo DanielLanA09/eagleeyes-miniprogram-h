@@ -107,6 +107,9 @@
               <span class="value">{{tradeDiscountRange[loanDiscountIndex].name}}<i class="iconfont icon-next"></i></span>
             </picker>
           </div>
+          <div class="e-center">
+            <div class="input-button active" @click="planStarted=false">返回</div>
+          </div>
         </div>
         <div class="cover-card">
           <div class="cover-title">
@@ -780,7 +783,9 @@ export default {
     font-size: 32rpx;
     padding: 0 150rpx;
   }
-  .input-button {
+
+}
+.input-button {
     width: 525rpx;
     height: 84rpx;
     background: rgba(255, 255, 255, 1);
@@ -803,7 +808,6 @@ export default {
     background: RGBA(50, 187, 143, 1);
     color: white;
   }
-}
 .level {
   display: flex;
   width: 100%;
