@@ -173,6 +173,7 @@ export default {
   margin-right: 8px;
   margin-top: 16px;
   border-radius: 5px;
+  border: none;
   height: 48px;
   box-shadow: 0 0 6rpx 6rpx rgb(231, 235, 241);
   line-height: 48px;

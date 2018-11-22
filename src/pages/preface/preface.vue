@@ -484,7 +484,7 @@ export default {
         if (res.success) {
           this.$store.commit("SET_CURRENT_COVER", res.data);
           wx.redirectTo({
-            url: "/pages/preface/main"
+            url: "/pages/preface/main?id="+i.coverId
           });
         }
       });

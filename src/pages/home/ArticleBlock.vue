@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="input-block">
-      <input type="text" class="width-full input" placeholder="搜索小区、楼盘、地区" @focus="onSearchFocus">
+      <div class="input" @click="onSearchFocus"><span class="iconfont icon-sousuo"></span > 搜索小区、楼盘、地区</div>
     </div>
     <swiper class="swiper" indicator-dots="true" autoplay="true">
       <swiper-item class="swiper-item" v-for="(L,K) in swiperItems.links" :key="K" @click="onSwiperClick(L)">
@@ -29,16 +29,16 @@
     <div class="body">
       <div class="left-block" @click="onMainBodyClick(bodyBlocks1)">
         <img :src="host+bodyBlocks1.blockImg" >
-        <div class="title">{{bodyBlocks1.name}}</div>
+        <!-- <div class="title">{{bodyBlocks1.name}}</div> -->
       </div>
       <div class="right-block">
         <div class="right-top" @click="onMainBodyClick(bodyBlocks2)">
           <img :src="host+bodyBlocks2.blockImg">
-          <div class="title">{{bodyBlocks2.name}}</div>
+          <!-- <div class="title">{{bodyBlocks2.name}}</div> -->
         </div>
         <div class="right-bottom" @click="onMainBodyClick(bodyBlocks3)">
           <img :src="host+bodyBlocks3.blockImg">
-          <div class="title">{{bodyBlocks3.name}}</div>
+          <!-- <div class="title">{{bodyBlocks3.name}}</div> -->
         </div>
       </div>
     </div>
@@ -124,6 +124,7 @@ export default {
       if (!this.swiperItems.links) {
         this.swiperItems.links = [];
       }
+      this.swiperItems.links.sort((a,b)=>a.position-b.position)
       let bodys = res.data.filter(i => i.blockType == "BODY");
       bodys.sort((a, b) => {
         a.position - b.position;
@@ -213,6 +214,7 @@ export default {
       });
     },
     onSearchFocus() {
+      console.log("hee")
       this.navigateTo("/pages/search/main");
     },
     onRecommend() {
@@ -267,13 +269,15 @@ export default {
 
 <style scoped lang="less">
 .input-block {
-  padding: 10px;
+  padding: 0rpx 32rpx;
   .input {
     background: rgb(245, 245, 245);
     border-radius: 50px;
     height: 32px;
-    padding-left: 40px;
+    padding-left: 16rpx;
     font-size: 14px;
+    line-height: 32px;
+    color:rgba(153,153,153,1);
   }
 }
 

@@ -115,7 +115,7 @@ export default {
   methods: {
     onback() {
       console.log("heeeee");
-      wx.switchTab({
+      wx.navigateTo({
         url: "/pages/compare/main"
       });
     },

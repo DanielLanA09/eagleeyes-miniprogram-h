@@ -77,7 +77,6 @@ export default {
 }
 .card {
   width: 714rpx;
-  height: 404rpx;
   background: rgba(255, 255, 255, 1);
   box-shadow: 0rpx 4rpx 20rpx rgba(0, 0, 0, 0.16);
   opacity: 1;
@@ -109,7 +108,6 @@ export default {
     }
   }
   .title {
-    height: 44rpx;
     font-size: 28rpx;
     font-family: PingFang SC;
     font-weight: 500;
@@ -117,7 +115,7 @@ export default {
     color: rgba(51, 51, 51, 1);
     opacity: 1;
     padding-left: 40rpx;
-    padding-top: 10rpx;
+    padding: 10rpx 40rpx 15rpx 40rpx;
   }
 }
 </style>

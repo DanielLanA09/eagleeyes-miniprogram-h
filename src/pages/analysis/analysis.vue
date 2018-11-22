@@ -25,7 +25,7 @@
                     </scroll-view>
                     <div class="s-nav-b" @click="showBlockNav">
                         <icon class="iconfont icon-xiaotubiao_fuzhi-27 down-nav"></icon>
-                        
+
                     </div>
                 </div>
             </div>
@@ -87,12 +87,12 @@
                           </div>
                         </div>
                         <div class="subtab-post" v-for="(c,ck) in m.content" :key="ck">
-                            <p><span v-for="(sc,sck) in c.content" :key="sck" :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}" 
+                            <p><span v-for="(sc,sck) in c.content" :key="sck" :class="{'text-explain': sc.type === 'explain', 'text-bold': sc.type === 'bold','text-transport':sc.type === 'transport'}"
                                 @click="showMessage(sc)">{{sc.content}}</span></p>
-                            
+
                             <div class="subtab-img-desc" v-if="img" v-for="(img,img_key) in c.img" :key="img_key">
                               <!-- FIXME: CHANGE THIS ABSOLUTE ROUTE. -->
-                                <img :src="'http://image.eagleshing.com/eagleeyes-mini-3.0/api/file/downloadFile/'+img">
+                                <img :src="host+img">
                                 <span>{{c.imgNames[img_key]}}</span>
                             </div>
                         </div>
@@ -137,6 +137,7 @@ export default {
     mProgress
   },
   data: () => ({
+    host:api.BASE_HOST,
     blockNavShow: false,
     messageBox: {
       mShow: false,
@@ -349,7 +350,7 @@ export default {
             .sort((a, b) => a.mId - b.mId);
 
           this.cModules = temModules;
-          
+
           wx.pageScrollTo({
             scrollTop: 0,
             duration: 500

@@ -1,11 +1,14 @@
 <template>
   <div>
-    <!-- <div class="e-center">
-      <img class="cover-img" :src="questionCover">
-    </div> -->
     <swiper class="swiper" indicator-dots="true" autoplay="true">
       <swiper-item class="swiper-item">
-        <img class="cover-img" :src="questionCover">
+        <img class="cover-img" :src="questionCover"  @click="onPreview('questioncover.png')">
+      </swiper-item>
+      <swiper-item class="swiper-item">
+        <img class="cover-img" :src="questionCover2" @click="onPreview('questioncover2.png')">
+      </swiper-item>
+      <swiper-item class="swiper-item">
+        <img class="cover-img" :src="questionCover3" @click="onPreview('questioncover3.png')">
       </swiper-item>
     </swiper>
     <div class="e-center margin-top-32">
@@ -28,7 +31,8 @@
           <div class="content">{{q.question}}</div>
         </div>
         <div class="h-between">
-          <div class="asker">{{q.asker}}</div>
+          <div class="asker" v-if="q.hidden">{{q.asker}}</div>
+          <div class="asker" v-else>****</div>
           <div class="asker">{{q.createdAt}}</div>
         </div>
         <div class="block-item" v-if="q.answers.length>0">
@@ -36,8 +40,8 @@
           <div class="content black">
             {{q.answers[0].reply}}
             <div class="footer-user">
-              <div class="user-icon"><img src=""><span>{{q.answers[0].replier}}</span></div>
-              <div @click="onPointClick" class="point-block" :class="{active:isPointed}"><span class="iconfont icon-like active"></span><span class="points">{{points}}</span></div>
+              <div class="user-icon"><img :src="userAvatar"><span>{{q.answers[0].replier}}</span></div>
+              <div @click="onPointClick(q.answers[0])" class="point-block" :class="{active:q.answers[0].praised}"><span class="iconfont icon-like active"></span><span class="points">{{q.answers[0].praise}}</span></div>
             </div>
           </div>
         </div>
@@ -68,14 +72,17 @@ export default {
     }
   },
   data: () => ({
-    host: "",
+    host: api.BASE_HOST,
     USER: null,
     question: {
       type: "COMMIT",
       question: "",
-      isHidden: true
+      isHidden: false
     },
-    questionCover: require("@/assets/imgs/questioncover.jpg"),
+    questionCover: require("@/assets/imgs/questioncover.png"),
+    questionCover2: require("@/assets/imgs/questioncover2.png"),
+    questionCover3: require("@/assets/imgs/questioncover3.png"),
+    userAvatar: require("@/assets/imgs/avatar.jpg"),
     pointed: false,
     points: 5,
     pageable: {
@@ -89,7 +96,26 @@ export default {
     isNameHidden() {
       this.question.isHidden = !this.question.isHidden;
     },
+    onPreview(img) {
+      wx.previewImage({
+        current: this.host + img,
+        urls: [
+          this.host + "questioncover.png",
+          this.host + "questioncover2.png",
+          this.host + "questioncover3.png"
+        ]
+      });
+    },
     ask() {
+      if (this.question.question.length < 5) {
+        wx.showModal({
+          title: "提示",
+          content:
+            "您的问题过短，请详细描述您的问题，保证字数大于10个，谢谢您的支持",
+          showCancel: false
+        });
+        return;
+      }
       if (this.USER == null) {
         this.login(
           success => {
@@ -131,13 +157,13 @@ export default {
         }
       });
     },
-    onPointClick() {
-      if (this.pointed) {
-        this.points--;
-        this.pointed = false;
-      } else {
-        this.points++;
-        this.pointed = true;
+    onPointClick(answer) {
+      if(answer.praised){
+        answer.praise--;
+        answer.praised=false
+      }else{
+        answer.praise++;
+        answer.praised=true
       }
     },
     findHotQuestions() {
@@ -147,6 +173,10 @@ export default {
           this.pageable.end = true;
           return;
         }
+        res.data.map(q=>{
+          q.answers[0].praise = Math.ceil(Math.random()*10);
+          q.answers[0].praised = false;
+        })
         this.hots = this.hots.concat(res.data);
       });
     }
@@ -170,8 +200,8 @@ export default {
 .cover-img {
   width: 714rpx;
   height: 304rpx;
-  background: rgba(0, 0, 0, 0);
-  box-shadow: 0px 4rpx 20rpx rgba(0, 0, 0, 0.16);
+  // background: rgba(0, 0, 0, 0);
+  // box-shadow: 0px 4rpx 20rpx rgba(0, 0, 0, 0.16);
   opacity: 1;
   border-radius: 30rpx;
   margin-left: auto;
@@ -323,6 +353,7 @@ export default {
             background: rgba(0, 0, 0, 0);
             border-radius: 50%;
             opacity: 1;
+            margin-right: 2rpx;
           }
         }
         .iconfont {

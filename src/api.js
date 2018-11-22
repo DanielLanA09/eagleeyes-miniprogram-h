@@ -42,7 +42,7 @@ function request(method, url, data, callback, complete) {
 }
 
 export default {
-  BASE_HOST: "http://image.eagleshing.com" + '/eagleeyes-mini-3.0/api/file/downloadFile/',
+  BASE_HOST: "http://image.eagleshing.com" + '/eagleeyes-mini-3.0/file/downloadFile/',
   getUserInfo(callback) {
     console.log("GETTING USER INFO...");
     wx.getUserInfo({
