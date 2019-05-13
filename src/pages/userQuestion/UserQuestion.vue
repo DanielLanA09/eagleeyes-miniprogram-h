@@ -2,7 +2,7 @@
   <div>
     <swiper class="swiper" indicator-dots="true" autoplay="true">
       <swiper-item class="swiper-item">
-        <img class="cover-img" :src="questionCover"  @click="onPreview('questioncover.png')">
+        <img class="cover-img" :src="questionCover" @click="onPreview('questioncover.png')">
       </swiper-item>
       <swiper-item class="swiper-item">
         <img class="cover-img" :src="questionCover2" @click="onPreview('questioncover2.png')">
@@ -13,7 +13,12 @@
     </swiper>
     <div class="e-center margin-top-32">
       <div class="input-block">
-        <textarea maxlength="-1" class="reply-text" v-model="question.question" placeholder="请输入您的问题..."></textarea>
+        <textarea
+          maxlength="-1"
+          class="reply-text"
+          v-model="question.question"
+          placeholder="请输入您的问题..."
+        ></textarea>
         <div class="input-footer">
           <div class="h-center check" @click="isNameHidden">
             <div class="font-style1">匿名</div>
@@ -23,7 +28,10 @@
         </div>
       </div>
     </div>
-    <div class="hot">热门 <span class="iconfont icon-arrow-left"></span></div>
+    <div class="hot">
+      热门
+      <span class="iconfont icon-arrow-left"></span>
+    </div>
     <div class="question-block">
       <div class="card" v-for="(q,k) in hots" :key="k">
         <div class="block-item top">
@@ -33,15 +41,25 @@
         <div class="h-between">
           <div class="asker" v-if="q.hidden">{{q.asker}}</div>
           <div class="asker" v-else>****</div>
-          <div class="asker">{{q.createdAt}}</div>
+          <!-- <div class="asker">{{q.createdAt}}</div> -->
         </div>
         <div class="block-item" v-if="q.answers.length>0">
           <div class="tangent green">答</div>
           <div class="content black">
             {{q.answers[0].reply}}
             <div class="footer-user">
-              <div class="user-icon"><img :src="userAvatar"><span>{{q.answers[0].replier}}</span></div>
-              <div @click="onPointClick(q.answers[0])" class="point-block" :class="{active:q.answers[0].praised}"><span class="iconfont icon-like active"></span><span class="points">{{q.answers[0].praise}}</span></div>
+              <div class="user-icon">
+                <img :src="userAvatar">
+                <span>{{q.answers[0].replier}}</span>
+              </div>
+              <div
+                @click="onPointClick(q.answers[0])"
+                class="point-block"
+                :class="{active:q.answers[0].praised}"
+              >
+                <span class="iconfont icon-like active"></span>
+                <span class="points">{{q.answers[0].praise}}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -116,10 +134,10 @@ export default {
         });
         return;
       }
-      if (this.USER == null) {
+      if (this.USER == null || this.USER.userId == 0) {
         this.login(
           success => {
-            this.commitQuestion();
+            this.ask();
           },
           fail => {
             wx.showModal({
@@ -158,12 +176,12 @@ export default {
       });
     },
     onPointClick(answer) {
-      if(answer.praised){
+      if (answer.praised) {
         answer.praise--;
-        answer.praised=false
-      }else{
+        answer.praised = false;
+      } else {
         answer.praise++;
-        answer.praised=true
+        answer.praised = true;
       }
     },
     findHotQuestions() {
@@ -173,10 +191,10 @@ export default {
           this.pageable.end = true;
           return;
         }
-        res.data.map(q=>{
-          q.answers[0].praise = Math.ceil(Math.random()*10);
+        res.data.map(q => {
+          q.answers[0].praise = Math.ceil(Math.random() * 10);
           q.answers[0].praised = false;
-        })
+        });
         this.hots = this.hots.concat(res.data);
       });
     }

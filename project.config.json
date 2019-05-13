@@ -10,8 +10,10 @@
 	"miniprogramRoot": "dist/",
 	"compileType": "miniprogram",
 	"appid": "wx3994889fc2a4b078",
-	"projectname": "eagle-eye-miniprogram",
+	"projectname": "eagleeyes-miniprogram-h",
 	"libVersion": "2.3.0",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,

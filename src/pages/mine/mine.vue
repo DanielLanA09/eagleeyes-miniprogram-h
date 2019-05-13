@@ -1,37 +1,47 @@
 <template>
-    <div>
-        <div class="profile-back">
-            <div class="back">
-              <img src="http://image.eagleshing.com/eagleeyes-mini-3.0/api/file/downloadFile/profile-back.png">
-            </div>
-            <div class="profile" @click="login">
-                <img class="profile-icon" :src="user.icon">
-                <div class="profile-name">{{user.name}}</div>
-            </div>
-        </div>
-        <div>
-            <div class="block" @click="navTo(0)">
-                <i class="iconfont icon-geren_shoucang title-icon"><span class="title">我的收藏</span></i>
-                <i class="iconfont icon-next right"></i>
-            </div>
-            <!-- <div class="block" @click="navTo(1)">
-                <i class="iconfont icon-geren_zuji title-icon"><span class="title">我的足迹</span></i>
-                <i class="iconfont icon-next right"></i>
-            </div> -->
-            <div class="block" @click="navTo(2)">
-                <i class="iconfont icon-geren_fankui title-icon"><span class="title">意见反馈</span></i>
-                <i class="iconfont icon-next right"></i>
-            </div>
-            <div class="block" @click="navTo(3)">
-                <i class="iconfont icon-geren_anquan title-icon"><span class="title">免责声明</span></i>
-                <i class="iconfont icon-next right"></i>
-            </div>
-            <button class="share-button block" open-type="share">
-              <i class="iconfont icon-geren_zhuanfa title-icon"><span class="title">分享鹰眼分析</span></i>
-              <i class="iconfont icon-next right"></i>
-            </button>
-        </div>
+  <div>
+    <div class="profile-back">
+      <div class="back">
+        <img :src="host+'profile-back.png'">
+      </div>
+      <div class="profile" @click="login">
+        <img class="profile-icon" :src="user.icon">
+        <div class="profile-name">{{user.name}}</div>
+      </div>
     </div>
+    <div>
+      <div class="block" @click="navTo(0)">
+        <i class="iconfont icon-geren_shoucang title-icon">
+          <span class="title">我的收藏</span>
+        </i>
+        <i class="iconfont icon-next right"></i>
+      </div>
+      <div class="block" @click="navTo(1)">
+        <i class="iconfont icon-geren_zuji title-icon">
+          <span class="title">我的的问答</span>
+        </i>
+        <i class="iconfont icon-next right"></i>
+      </div>
+      <div class="block" @click="navTo(2)">
+        <i class="iconfont icon-geren_fankui title-icon">
+          <span class="title">意见反馈</span>
+        </i>
+        <i class="iconfont icon-next right"></i>
+      </div>
+      <div class="block" @click="navTo(3)">
+        <i class="iconfont icon-geren_anquan title-icon">
+          <span class="title">免责声明</span>
+        </i>
+        <i class="iconfont icon-next right"></i>
+      </div>
+      <button class="share-button block" open-type="share">
+        <i class="iconfont icon-geren_zhuanfa title-icon">
+          <span class="title">分享鹰眼分析</span>
+        </i>
+        <i class="iconfont icon-next right"></i>
+      </button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -57,7 +67,8 @@ export default {
       icon: "",
       name: "点击登陆"
     },
-    backImg: "../../../static/imgs/mine-back.png"
+    backImg: "../../../static/imgs/mine-back.png",
+    host: api.BASE_HOST
   }),
   methods: {
     login() {

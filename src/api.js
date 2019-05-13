@@ -1,8 +1,8 @@
 import store from "@/store.js"
 
-// const base = 'http://192.168.31.252:30080//eagleeyes-mini-3.0';
+// const base = 'http://192.168.31.252:30080/eagleeyes-mini-3.0';
 // const base = "http://localhost:8091"
-const base = "https://www.eagleshing.com//eagleeyes-mini-3.0"
+const base = "https://www.eagleshing.com/eagleeyes-mini-3.0"
 
 
 function request(method, url, data, callback, complete) {
@@ -42,7 +42,7 @@ function request(method, url, data, callback, complete) {
 }
 
 export default {
-  BASE_HOST: "http://image.eagleshing.com" + '/eagleeyes-mini-3.0/file/downloadFile/',
+  BASE_HOST: "http://image.eagleshing.com/eagleeyes-mini-3.0/file/downloadFile/",
   getUserInfo(callback) {
     console.log("GETTING USER INFO...");
     wx.getUserInfo({
@@ -164,7 +164,7 @@ export default {
     console.log('START LOGIN...');
     request("POST", "/user/login", data, callback);
   },
-  simLogin(callback,finalcall) {
+  simLogin(callback, finalcall) {
     wx.getUserInfo({
       withCredentials: true,
       lang: "zh_CN",
@@ -172,8 +172,9 @@ export default {
         let data = res.userInfo;
         wx.login({
           success(logRes) {
-            if(!logRes.code){
-              callback({success:false,data:logRes.errMsg})
+            if (!logRes.code) {
+              callback({ success: false, data: logRes.errMsg })
+
               return;
             }
             data.code = logRes.code;
@@ -181,21 +182,21 @@ export default {
               if (loginRes.success) {
                 store.commit("SET_USER", loginRes.data);
                 if (callback) {
-                  callback({success: true,data: loginRes.data})
+                  callback({ success: true, data: loginRes.data })
                 }
               }
             });
           },
-          complete(res){
-            if(finalcall){
-              finalcall({data:res})
+          complete(res) {
+            if (finalcall) {
+              finalcall({ data: res })
             }
           }
         })
       },
       fail(res) {
         console.log("---------USER INFO GETING FAILED!!---------", res);
-        callback({success:false,data:res.errMsg})
+        callback({ success: false, data: res.errMsg })
       }
     })
   },
@@ -235,11 +236,11 @@ export default {
   getHomeBlocks(callback) {
     request("GET", "/post/homeblocks", null, callback)
   },
-  getHomeBlockByType(type,callback){
-    request("GET","/post/findblock",{blockType:type},callback);
+  getHomeBlockByType(type, callback) {
+    request("GET", "/post/findblock", { blockType: type }, callback);
   },
-  getHomeBlockByTypeAndTitle(type,title,callback){
-    request("GET","/post/findblockbytypeandtype",{blockType:type,title:title},callback);
+  getHomeBlockByTypeAndTitle(type, title, callback) {
+    request("GET", "/post/findblockbytypeandtype", { blockType: type, title: title }, callback);
   },
   getHomeCovers(page, size, callback) {
     request("GET", "/post/homecovers", {
@@ -247,16 +248,19 @@ export default {
       size: size
     }, callback)
   },
-  addLinkView(id,callback){
-    request("GET","/post/articlelinkviewadd",{id:id},callback);
+  addLinkView(id, callback) {
+    request("GET", "/post/articlelinkviewadd", { id: id }, callback);
   },
-  findCoverByPrice(price,page,size,callback){
-    request('GET',"/post/findCoverByPrice",{price:price,page:page,size:size},callback)
+  findCoverByPrice(price, page, size, callback) {
+    request('GET', "/post/findCoverByPrice", { price: price, page: page, size: size }, callback)
   },
-  commitQuestion(data,callback){
-    request("POST","/question/commit",data,callback)
+  commitQuestion(data, callback) {
+    request("POST", "/question/commit", data, callback)
   },
-  findUserQuestions(pageable,callback){
-    request("GET","/question/questions",{page:pageable.page*pageable.size,size:pageable.size},callback)
+  findUserQuestions(pageable, callback) {
+    request("GET", "/question/questions", { page: pageable.page * pageable.size, size: pageable.size }, callback)
+  },
+  findDevisionBy2Id(id1, id2, callback) {
+    request("GET", "/post/" + id1 + "/" + id2 + "/finddevision", null, callback);
   }
 }
