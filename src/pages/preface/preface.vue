@@ -38,6 +38,15 @@
       </div>
       <div class="p-graph1">
         <div class="title e-center">
+          <title :title="'视频简介'"></title>
+        </div>
+        <div class="body e-center">
+          <video id="myVideo" :src="videoSrc"
+            controls></video>
+        </div>
+      </div>
+      <div class="p-graph1" style="margin-top:30rpx;">
+        <div class="title e-center">
           <title :title="'周边配套'"></title>
         </div>
         <div class="body e-center">
@@ -164,7 +173,7 @@ export default {
       开发商: "",
       小区地址: ""
     },
-
+    videoSrc: '',
     gStart: false,
     postContent: [],
     modules: [],
@@ -218,6 +227,9 @@ export default {
       res => {
         me.$store.commit("SET_CURRENT_COVER", res.data);
         cover = me.$store.state.CURRENT_COVER;
+        if (res.data.videoSrc) {
+          this.videoSrc = res.data.videoSrc
+        }
       },
       () => {
         me.pid = cover.coverId;
@@ -257,7 +269,6 @@ export default {
       }
     );
   },
-
   onShareAppMessage: function(option) {
     let me = this;
     if (option.from === "menu") {
