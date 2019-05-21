@@ -1,0 +1,24 @@
+@startuml
+start
+:read detail or watch video;
+if(logined) then (yes)
+else(no)
+:login;
+endif
+if(user has this project) then(yes)
+else (no)
+if(remain unlock point > 0) then(yes) 
+: unlock this project;
+else (no) 
+: remind user of sharing app;
+if(shared) then(yes)
+: add user unlock point by 1;
+: unlock this project;
+else (no)
+end
+endif
+endif
+endif
+: go to view this project;
+end
+@enduml
