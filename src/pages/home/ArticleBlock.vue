@@ -103,10 +103,11 @@ export default {
       page: 0,
       size: 5,
       end: false
-    }
+    },
+    USER: null
   }),
   onShareAppMessage: function(option) {
-    let me = this;
+    console.log("On share :", option)
     return {
       title: "基于大数据的二手房小区测评",
       path: "/pages/home/main",
@@ -114,6 +115,7 @@ export default {
     };
   },
   onLoad() {
+    this.USER = this.$store.state.USER_INFO
     this.pageable.end = false;
     this.pageable.page = 0;
     api.getHomeBlocks(res => {

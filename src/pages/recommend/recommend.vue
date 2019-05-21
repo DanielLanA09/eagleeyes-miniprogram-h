@@ -1,7 +1,7 @@
 <template>
   <div>
       <div v-if="!planStarted">
-        <img :src="backUrl" class="background">
+        <img :src="host+'homeback.png'" class="background">
         <div class="profile">
           <div class="circle1">
             <div class="circle2">
@@ -134,7 +134,7 @@ export default {
     card
   },
   data: () => ({
-    backUrl: require("@/assets/imgs/homeback.png"),
+    host: api.BASE_HOST,
     userIcon: "",
     couldStart: false,
     planStarted: false,

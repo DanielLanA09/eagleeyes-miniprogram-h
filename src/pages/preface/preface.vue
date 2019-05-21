@@ -1,36 +1,76 @@
 <template>
   <div class="p-container">
     <div>
-      <mcover :coverurl="coverurl" @onBack="onBack" @onCollectChange="onCollectChange" :collected="favorite"></mcover>
+      <mcover
+        :coverurl="coverurl"
+        @onBack="onBack"
+        @onCollectChange="onCollectChange"
+        :collected="favorite"
+      ></mcover>
     </div>
     <div class="p-body e-center">
       <div class="p-general">
         <div class="title-price">
-          <div class="title">
-            {{title}}
-          </div>
-          <div class="price">
-            ￥{{price}}
-          </div>
+          <div class="title">{{title}}</div>
+          <div class="price">￥{{price}}</div>
         </div>
         <div class="notations">
           <div class="notation">
-            <notation :marginRight="15" :align="'flex-start'" :acceptType="'ADVANTAGE'" :borderColor="'#4AD9B7'" :backgroundColor="'#4AD9B7'" :fontColor="'white'" :numLimit="4" :list="notations" :width="130" :clickable="false"></notation>
+            <notation
+              :marginRight="15"
+              :align="'flex-start'"
+              :acceptType="'ADVANTAGE'"
+              :borderColor="'#4AD9B7'"
+              :backgroundColor="'#4AD9B7'"
+              :fontColor="'white'"
+              :numLimit="4"
+              :list="notations"
+              :width="130"
+              :clickable="false"
+            ></notation>
           </div>
           <div class="notation">
-            <notation :marginRight="15" :align="'flex-start'" :acceptType="'DISADVANTAGE'" :borderColor="'#ff8097'" :backgroundColor="'#ff8097'" :fontColor="'white'" :numLimit="4" :list="notations" :width="130" :clickable="false"></notation>
+            <notation
+              :marginRight="15"
+              :align="'flex-start'"
+              :acceptType="'DISADVANTAGE'"
+              :borderColor="'#ff8097'"
+              :backgroundColor="'#ff8097'"
+              :fontColor="'white'"
+              :numLimit="4"
+              :list="notations"
+              :width="130"
+              :clickable="false"
+            ></notation>
           </div>
         </div>
         <div class="content1">
           <div v-for="(i,k) in contentlst1" :key="k">
-            <key-value  :keyName="i.paramName" :keyValue="i.paramData"></key-value>
+            <key-value :keyName="i.paramName" :keyValue="i.paramData"></key-value>
           </div>
         </div>
         <div class="content2">
-          <div><div style="display:inline-block;width:150rpx;"><span class="key-name">采集时间:</span></div><span class="key-value">{{contentlst2["采集时间"]}}</span></div>
-          <div><div style="display:inline-block;width:150rpx;"><span class="key-name">开发商名:</span></div><span class="key-value">{{contentlst2["开发商"]}}</span></div>
-          <div><div style="display:inline-block;width:150rpx;" ><span class="key-name" >小区地址:</span></div><span class="key-value" style="color:#4ad9b7" @click="goMap">{{contentlst2["小区地址"]}}</span></div>
-          <div class="location" @click="goMap"><icon class="iconfont icon-zuobiao"></icon></div>
+          <div>
+            <div style="display:inline-block;width:150rpx;">
+              <span class="key-name">采集时间:</span>
+            </div>
+            <span class="key-value">{{contentlst2["采集时间"]}}</span>
+          </div>
+          <div>
+            <div style="display:inline-block;width:150rpx;">
+              <span class="key-name">开发商名:</span>
+            </div>
+            <span class="key-value">{{contentlst2["开发商"]}}</span>
+          </div>
+          <div>
+            <div style="display:inline-block;width:150rpx;">
+              <span class="key-name">小区地址:</span>
+            </div>
+            <span class="key-value" style="color:#4ad9b7" @click="goMap">{{contentlst2["小区地址"]}}</span>
+          </div>
+          <div class="location" @click="goMap">
+            <icon class="iconfont icon-zuobiao"></icon>
+          </div>
         </div>
         <div class="content3">
           <span>注：文中部分实地考察信息为我司工作人员于采集日期考察采集，如有变化，以实际情况为准。文中所有距离均以小区中心为起点计算。</span>
@@ -40,9 +80,15 @@
         <div class="title e-center">
           <title :title="'视频简介'"></title>
         </div>
-        <div class="body e-center">
-          <video id="myVideo" :src="videoSrc"
-            controls></video>
+        <div class="body e-center" style="margin-bottom: 50rpx;">
+          <button
+            type="primary"
+            v-if="!unlock"
+            size="mini"
+            class="video-play"
+            @click="unlockVideo"
+          >播放视频</button>
+          <video id="myVideo" v-if="unlock" :src="videoSrc" controls></video>
         </div>
       </div>
       <div class="p-graph1" style="margin-top:30rpx;">
@@ -52,15 +98,36 @@
         <div class="body e-center">
           <div>
             <div class="g-container" :style="{height:mstyle1.mH+'px',width:mstyle1.mW+'px'}">
-              <canvas class="g-canvas" canvas-id="radar1" :style="{height:mstyle1.mH+'px',width:mstyle1.mW+'px'}" @click="goDetail"></canvas>
-              <div v-for="(i,k) in outerList" :key="k" class="params" style="position:absolute;" :style="{top:i.top+'px',left:i.left+'px',color:i.color}" @click="goNav(i)">
-                <span>{{i.devName}} <icon class="iconfont" :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']" style="font-size:12px;" ></icon></span>
+              <canvas
+                class="g-canvas"
+                canvas-id="radar1"
+                :style="{height:mstyle1.mH+'px',width:mstyle1.mW+'px'}"
+                @click="goDetail"
+              ></canvas>
+              <div
+                v-for="(i,k) in outerList"
+                :key="k"
+                class="params"
+                style="position:absolute;"
+                :style="{top:i.top+'px',left:i.left+'px',color:i.color}"
+                @click="goNav(i)"
+              >
+                <span>
+                  {{i.devName}}
+                  <icon
+                    class="iconfont"
+                    :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']"
+                    style="font-size:12px;"
+                  ></icon>
+                </span>
               </div>
             </div>
           </div>
         </div>
         <div class="tips-text e-center">
-          <span><span>点击上方标签，查看模块详情</span></span>
+          <span>
+            <span>点击上方标签，查看模块详情</span>
+          </span>
         </div>
       </div>
       <div class="p-graph2">
@@ -70,40 +137,69 @@
         <div class="body e-center">
           <div>
             <div class="g-container" :style="{height:mstyle2.mH+'px',width:mstyle2.mW+'px'}">
-              <canvas class="g-canvas" canvas-id="radar2" :style="{height:mstyle2.mH+'px',width:mstyle2.mW+'px'}" @click="goDetail"></canvas>
-              <div v-for="(i,k) in innerList" :key="k" class="params" style="position:absolute;" :style="{top:i.top+'px',left:i.left+'px',color:i.color}" @click="goNav(i)">
-                <span>{{i.devName}} <icon class="iconfont" :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']" style="font-size:12px;" ></icon></span>
+              <canvas
+                class="g-canvas"
+                canvas-id="radar2"
+                :style="{height:mstyle2.mH+'px',width:mstyle2.mW+'px'}"
+                @click="goDetail"
+              ></canvas>
+              <div
+                v-for="(i,k) in innerList"
+                :key="k"
+                class="params"
+                style="position:absolute;"
+                :style="{top:i.top+'px',left:i.left+'px',color:i.color}"
+                @click="goNav(i)"
+              >
+                <span>
+                  {{i.devName}}
+                  <icon
+                    class="iconfont"
+                    :class="[i.mark>=75?'icon-biaoqing_haoping':i.mark<50?'icon-biaoqing_chaping':'icon-biaoqing_yiban']"
+                    style="font-size:12px;"
+                  ></icon>
+                </span>
               </div>
             </div>
           </div>
         </div>
         <div class="tips-text eagle-border-top-hr e-center">
-          <span><span>点击上方标签，查看模块详情</span></span>
+          <span>
+            <span>点击上方标签，查看模块详情</span>
+          </span>
         </div>
       </div>
     </div>
     <div class="p-prewords">
-      <div class="swiper-item-post" v-for="(m,key) in modules" :key="key" >
+      <div class="swiper-item-post" v-for="(m,key) in modules" :key="key">
         <div class="e-center e-margin-bottom-30" style="padding-top:50rpx;margin-top:50rpx;">
           <div style="border-bottom:solid 2px rgb(231,235,241);">
             <title :title="m.mName"></title>
           </div>
         </div>
         <div class="subtab-post" v-if="m.branch==0">
-          <p v-for="(c,ck) in m.content" :key="ck" >
-            <span @click="showMessage(c)" v-for="(cc,cck) in c" :key="cck" :class="{'text-explain': cc.type === 'explain', 'text-bold': cc.type === 'bold','text-transport':cc.type === 'transport'}" >{{cc.content}}</span>
+          <p v-for="(c,ck) in m.content" :key="ck">
+            <span
+              @click="showMessage(c)"
+              v-for="(cc,cck) in c"
+              :key="cck"
+              :class="{'text-explain': cc.type === 'explain', 'text-bold': cc.type === 'bold','text-transport':cc.type === 'transport'}"
+            >{{cc.content}}</span>
           </p>
         </div>
         <div class="tips e-center">
-          <span><button @click="goDetail">点击查看详情 ></button></span>
+          <span>
+            <button @click="goDetail">点击查看详情 ></button>
+          </span>
         </div>
-        <div style="font-size:20rpx;color:rgb(177,177,177);margin:40rpx 35rpx;">
-          版权声明：除了特别声明以外，小程序里的所有的数据、图片和文章都是我们日晒雨淋的采集小哥哥和爆肝敲字的文案小姐姐辛辛苦苦的劳动成果，所有版权归鹰眼分析大家庭所有。如果需转载我们的文章，请一定要先联系我们，否则的话，小心法院传票丢你胸口哦。本司保留追究非法转载者法律责任的权利。
-        </div>
+        <div
+          style="font-size:20rpx;color:rgb(177,177,177);margin:40rpx 35rpx;"
+        >版权声明：除了特别声明以外，小程序里的所有的数据、图片和文章都是我们日晒雨淋的采集小哥哥和爆肝敲字的文案小姐姐辛辛苦苦的劳动成果，所有版权归鹰眼分析大家庭所有。如果需转载我们的文章，请一定要先联系我们，否则的话，小心法院传票丢你胸口哦。本司保留追究非法转载者法律责任的权利。</div>
       </div>
     </div>
-    <div class="a-round" >
-        <houseround :list="aroundList" @onClick="goView"></houseround>
+    <share-modal :shown="remindUser" @afterShare="afterShare" @close="remindUser = false"></share-modal>
+    <div class="a-round">
+      <houseround :list="aroundList" @onClick="goView"></houseround>
     </div>
   </div>
 </template>
@@ -118,6 +214,7 @@ import keyValue from "@/components/keyvalue";
 import title from "@/components/title/solidTitle";
 import preserveHelper from "@/utils/preserve";
 import houseround from "@/components/houseround";
+import shareModal from "@/components/shareModal.vue";
 export default {
   components: {
     mcover,
@@ -126,7 +223,8 @@ export default {
     notation,
     keyValue,
     title,
-    houseround
+    houseround,
+    shareModal
   },
   props: {
     title: {
@@ -143,6 +241,9 @@ export default {
       mH: 250,
       mW: 250
     },
+    remindUser: false,
+    unlock: false,
+    videoContext: null,
     coverurl: "",
     favorite: false,
     notations: [],
@@ -173,7 +274,7 @@ export default {
       开发商: "",
       小区地址: ""
     },
-    videoSrc: '',
+    videoSrc: "",
     gStart: false,
     postContent: [],
     modules: [],
@@ -217,18 +318,22 @@ export default {
       mW: 260, //宽
       mH: 260 //高
     },
-    innerList: []
+    innerList: [],
+    USER: null
   }),
   onLoad(query) {
     let me = this;
     let cover = {};
+    this.USER = this.$store.state.USER_INFO;
+    this.unlock = false;
+    this.videoContext = wx.createVideoContext("myVideo");
     api.findCover(
       query.id,
       res => {
         me.$store.commit("SET_CURRENT_COVER", res.data);
         cover = me.$store.state.CURRENT_COVER;
         if (res.data.videoSrc) {
-          this.videoSrc = res.data.videoSrc
+          this.videoSrc = res.data.videoSrc;
         }
       },
       () => {
@@ -303,6 +408,73 @@ export default {
         url: "/pages/home/main"
       });
     },
+    afterShare() {
+      this.remindUser = false;
+      this.$http.post(
+        "/post/addOneUnlockPoint",
+        { userId: this.$store.state.USER_INFO.userId },
+        res => {
+          if (res.success) {
+            wx.navigateTo({
+              url: "/pages/analysis/main?cId=" + this.coverId
+            });
+          }
+        }
+      );
+    },
+    unlockVideo() {
+      let self = this;
+      this.unlockProject(res => {
+        self.unlock = res;
+        if (res) {
+          this.videoContext.play();
+        } else {
+          self.showShareMenu()
+        }
+      });
+    },
+    showShareMenu(){
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 1000
+      });
+      this.remindUser = true;
+    },
+    unlockProject(callback) {
+      let self = this;
+      if (this.USER.userId === null) {
+        this.$http.simLogin(res => {
+          if (res.success) {
+            self.USER = res.data;
+            // LOGIN SUCCESS
+            self.unlockProject();
+          } else {
+            // LOGIN FAILED
+            wx.showModal({
+              title: "提示",
+              content: "您需要登录才能授权！",
+              showCancel: false,
+              confirmText: "关闭"
+            });
+          }
+        });
+      } else {
+        this.$http.post(
+          "/post/unlockProject",
+          {
+            projectId: this.coverId,
+            userId: this.$store.state.USER_INFO.userId
+          },
+          res => {
+            if (res.success) {
+              if (callback) {
+                callback(res.data);
+              }
+            }
+          }
+        );
+      }
+    },
     onCollectChange(e) {
       if (!e) {
         api.addFavorite(
@@ -333,9 +505,14 @@ export default {
       }
     },
     goDetail() {
-      // api.saveAccessHistory(this.$store.state.USER_INFO, "综合页面查看详情", 5,this.title);
-      wx.navigateTo({
-        url: "/pages/analysis/main?cId=" + this.coverId
+      this.unlockProject(res => {
+        if (res) {
+          wx.navigateTo({
+            url: "/pages/analysis/main?cId=" + this.coverId
+          });
+        } else {
+          this.showShareMenu()
+        }
       });
     },
     requestDevs(id) {
@@ -495,7 +672,7 @@ export default {
         if (res.success) {
           this.$store.commit("SET_CURRENT_COVER", res.data);
           wx.redirectTo({
-            url: "/pages/preface/main?id="+i.coverId
+            url: "/pages/preface/main?id=" + i.coverId
           });
         }
       });
@@ -851,5 +1028,8 @@ export default {
 .notation {
   height: 70rpx;
   overflow: hidden;
+}
+.video-play {
+  width: 80%;
 }
 </style>

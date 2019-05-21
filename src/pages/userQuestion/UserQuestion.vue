@@ -2,13 +2,25 @@
   <div>
     <swiper class="swiper" indicator-dots="true" autoplay="true">
       <swiper-item class="swiper-item">
-        <img class="cover-img" :src="questionCover" @click="onPreview('questioncover.png')">
+        <img
+          class="cover-img"
+          :src="host+'questioncover.png'"
+          @click="onPreview('questioncover.png')"
+        >
       </swiper-item>
       <swiper-item class="swiper-item">
-        <img class="cover-img" :src="questionCover2" @click="onPreview('questioncover2.png')">
+        <img
+          class="cover-img"
+          :src="host+'questioncover2.png'"
+          @click="onPreview('questioncover2.png')"
+        >
       </swiper-item>
       <swiper-item class="swiper-item">
-        <img class="cover-img" :src="questionCover3" @click="onPreview('questioncover3.png')">
+        <img
+          class="cover-img"
+          :src="host+'questioncover3.png'"
+          @click="onPreview('questioncover3.png')"
+        >
       </swiper-item>
     </swiper>
     <div class="e-center margin-top-32">
@@ -20,11 +32,28 @@
           placeholder="请输入您的问题..."
         ></textarea>
         <div class="input-footer">
-          <div class="h-center check" @click="isNameHidden">
-            <div class="font-style1">匿名</div>
-            <span class="iconfont icon-duigou" :class="{active:nameHidden}"></span>
+          <div class="user-option">
+            <div class="h-center check" @click="isNameHidden">
+              <div class="font-style1">匿名</div>
+              <span class="iconfont icon-duigou" :class="{active:nameHidden}"></span>
+            </div>
+            <div class="h-center check more contact-me" @click="setContactMe">
+              <div class="font-style1">可联系我</div>
+              <span class="iconfont icon-duigou" :class="{active:question.canContactMe}"></span>
+            </div>
           </div>
-          <div class="button-green" @click="ask">我要咨询</div>
+
+          <!-- <div class="button-green"  @click="ask">我要咨询</div> -->
+          <button
+            v-if="question.canContactMe"
+            class="ask-btn"
+            size="mini"
+            ref="askbtn"
+            open-type="getPhoneNumber"
+            type="primary"
+            @getphonenumber="ask"
+          >我要咨询</button>
+          <button v-else class="ask-btn" size="mini" ref="askbtn" type="primary" @click="ask">我要咨询</button>
         </div>
       </div>
     </div>
@@ -70,6 +99,7 @@
 
 <script>
 import api from "@/api";
+var WXBizDataCrypt = require("@/utils/WXBizDataCrypt");
 export default {
   onLoad() {
     this.USER = this.$store.state.USER_INFO;
@@ -95,12 +125,9 @@ export default {
     question: {
       type: "COMMIT",
       question: "",
-      isHidden: false
+      isHidden: true,
+      canContactMe: true
     },
-    questionCover: require("@/assets/imgs/questioncover.png"),
-    questionCover2: require("@/assets/imgs/questioncover2.png"),
-    questionCover3: require("@/assets/imgs/questioncover3.png"),
-    userAvatar: require("@/assets/imgs/avatar.jpg"),
     pointed: false,
     points: 5,
     pageable: {
@@ -108,11 +135,15 @@ export default {
       size: 5,
       end: false
     },
-    hots: []
+    hots: [],
+    phoneInfo: null
   }),
   methods: {
     isNameHidden() {
       this.question.isHidden = !this.question.isHidden;
+    },
+    setContactMe() {
+      this.question.canContactMe = !this.question.canContactMe;
     },
     onPreview(img) {
       wx.previewImage({
@@ -124,7 +155,8 @@ export default {
         ]
       });
     },
-    ask() {
+    ask(e) {
+      let data = ''
       if (this.question.question.length < 5) {
         wx.showModal({
           title: "提示",
@@ -135,9 +167,10 @@ export default {
         return;
       }
       if (this.USER == null || this.USER.userId == 0) {
+        // doesen't login
         this.login(
           success => {
-            this.ask();
+            // login success
           },
           fail => {
             wx.showModal({
@@ -148,7 +181,19 @@ export default {
           }
         );
       } else {
-        this.commitQuestion();
+        // logined
+        if (this.question.canContactMe) {
+          if (e.target.errMsg === "getPhoneNumber:ok") {
+            let appId = "wx3994889fc2a4b078";
+            let sessionKey = this.USER.session_key;
+            let encryptedData = e.target.encryptedData;
+            let iv = e.target.iv;
+            let pc = new WXBizDataCrypt(appId, sessionKey);
+            data = pc.decryptData(encryptedData, iv);
+            console.log("THE USER PHONE INFO IS: ", data);
+          }
+        }
+        this.commitQuestion(data);
       }
     },
     login(success, fail) {
@@ -161,8 +206,11 @@ export default {
         }
       });
     },
-    commitQuestion() {
+    commitQuestion(data) {
       this.question.userId = this.USER.userId;
+      if (data !== null) {
+        this.question.phoneNumber = data.phoneNumber;
+      }
       api.commitQuestion(this.question, res => {
         if (res.success) {
           wx.showModal({
@@ -185,7 +233,6 @@ export default {
       }
     },
     findHotQuestions() {
-      console.log("daljlasdfljla");
       api.findUserQuestions(this.pageable, res => {
         if (res.data.length == 0) {
           this.pageable.end = true;
@@ -249,6 +296,12 @@ export default {
   align-items: flex-start;
   height: 82rpx;
   padding: 0 20rpx;
+  .user-option {
+    display: flex;
+    .contact-me {
+      margin-left: 10rpx;
+    }
+  }
 }
 .check {
   width: 124rpx;
@@ -256,6 +309,9 @@ export default {
   background: rgba(227, 227, 227, 1);
   opacity: 1;
   border-radius: 12rpx;
+}
+.check.more {
+  width: 160rpx;
 }
 .font-style1 {
   font-size: 28rpx;
@@ -277,6 +333,9 @@ export default {
 .icon-duigou.active {
   background: rgba(106, 223, 195, 1);
   color: white;
+}
+.ask-btn {
+  margin: 0;
 }
 .button-green {
   width: 180rpx;

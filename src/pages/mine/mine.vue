@@ -18,7 +18,7 @@
       </div>
       <div class="block" @click="navTo(1)">
         <i class="iconfont icon-geren_zuji title-icon">
-          <span class="title">我的的问答</span>
+          <span class="title">我的问答</span>
         </i>
         <i class="iconfont icon-next right"></i>
       </div>
@@ -112,11 +112,14 @@ export default {
           break;
         }
         case 1: {
-          wx.showModal({
-            title: "提示",
-            content: "功能开发中，敬请期待！",
-            showCancel: false,
-            confirmText: "关闭"
+          // wx.showModal({
+          //   title: "提示",
+          //   content: "功能开发中，敬请期待！",
+          //   showCancel: false,
+          //   confirmText: "关闭"
+          // });
+          wx.navigateTo({
+            url: "/pages/myquestion/main"
           });
           break;
         }
@@ -149,7 +152,6 @@ export default {
   border-radius: 15px;
   margin: 0 8px;
   background-size: cover;
-  background-image: url("../../../static/imgs/mine-back.png");
 }
 .back {
   height: 100%;

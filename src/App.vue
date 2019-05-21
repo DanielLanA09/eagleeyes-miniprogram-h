@@ -24,6 +24,16 @@ export default {
 </script>
 
 <style>
+@font-face {
+  font-family: 'iconfont';  /* project id 642227 */
+  src: url('//at.alicdn.com/t/font_642227_xlnbqb4e9zd.eot');
+  src: url('//at.alicdn.com/t/font_642227_xlnbqb4e9zd.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_642227_xlnbqb4e9zd.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_642227_xlnbqb4e9zd.woff') format('woff'),
+  url('//at.alicdn.com/t/font_642227_xlnbqb4e9zd.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_642227_xlnbqb4e9zd.svg#iconfont') format('svg');
+}
+
 @import "../static/icons/iconfont.css";
 @import "../static/style/eagleeyes.css";
 .container {

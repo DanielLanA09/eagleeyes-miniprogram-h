@@ -1,8 +1,8 @@
 import store from "@/store.js"
 
 // const base = 'http://192.168.31.252:30080/eagleeyes-mini-3.0';
-// const base = "http://localhost:8091"
-const base = "https://www.eagleshing.com/eagleeyes-mini-3.0"
+const base = "http://192.168.32.128:8091"
+// const base = "https://www.eagleshing.com/eagleeyes-mini-3.0"
 
 
 function request(method, url, data, callback, complete) {
@@ -70,6 +70,7 @@ export default {
       }
     })
   },
+  
   homeList(data, callback) {
     console.log('FINDING CARDS BY DEVISION, MARK AND DISTRICT...');
     request("GET", "/post/filterbycondition", data, callback)
@@ -172,9 +173,9 @@ export default {
         let data = res.userInfo;
         wx.login({
           success(logRes) {
+            console.log("wx login:", logRes)
             if (!logRes.code) {
               callback({ success: false, data: logRes.errMsg })
-
               return;
             }
             data.code = logRes.code;
@@ -262,5 +263,14 @@ export default {
   },
   findDevisionBy2Id(id1, id2, callback) {
     request("GET", "/post/" + id1 + "/" + id2 + "/finddevision", null, callback);
+  },
+  findMyQuestions(userId, callback) {
+    request("GET", "/question/myQuestion", { userId: userId }, callback)
+  },
+  post(url, params, callback) {
+    request("POST", url, params, callback)
+  },
+  get(url, params, callback) {
+    request("GET", url, params, callback)
   }
 }

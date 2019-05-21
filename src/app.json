@@ -17,7 +17,8 @@
     "pages/map/main",
     "pages/notice/main",
     "pages/advice/main",
-    "pages/blog/main"
+    "pages/blog/main",
+    "pages/myquestion/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
