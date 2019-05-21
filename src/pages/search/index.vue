@@ -1,54 +1,75 @@
 <template>
-    <div class="search-back">
-        <div class="h-padding-34">
-            <div>
-              <div class="search-block">
-                  <input type="text" placeholder="搜索您要找的小区、楼盘"  @confirm="onConfirm" v-model="keyword">
-                  <div class="search-button" @click="onConfirm"><span>{{searchWord}}</span></div>
-                  <span class="iconfont icon-sousuo"></span>
-                  <span class="iconfont icon-quxiao" @click="deleteKeyword" v-show="showDelete"></span>
-              </div>
-            </div>
+  <div class="search-back">
+    <div class="h-padding-34">
+      <div>
+        <div class="search-block">
+          <input type="text" placeholder="搜索您要找的小区、楼盘" @confirm="onConfirm" v-model="keyword">
+          <div class="search-button" @click="onConfirm">
+            <span>{{searchWord}}</span>
+          </div>
+          <span class="iconfont icon-sousuo"></span>
+          <span class="iconfont icon-quxiao" @click="deleteKeyword" v-show="showDelete"></span>
         </div>
-        <div class="switch">
-          <div class="item" :class="{active:articleSwitch==1?true:false}" @click="articleSwitch=1">小区</div>
-          <div class="item" :class="{active:articleSwitch==2?true:false}" @click="articleSwitch=2">文章</div>
+      </div>
+    </div>
+    <div class="switch">
+      <div class="item" :class="{active:articleSwitch==1?true:false}" @click="articleSwitch=1">小区</div>
+      <div class="item" :class="{active:articleSwitch==2?true:false}" @click="articleSwitch=2">文章</div>
+    </div>
+    <div class="h-padding-34 hot-key" v-if="articleSwitch==1&&showHotKey">
+      <div class="hot-title">热门楼盘</div>
+      <notation
+        :width="150"
+        :list="list"
+        @onClick="onNotationClick"
+        :marginRight="10"
+        :backgroundColor="'rgba(245,245,245,1)'"
+        :fontColor="'rgba(51,51,51,1)'"
+        :clickable="false"
+        :isNonBack="true"
+        :borderColor="'rgba(245,245,245,1)'"
+      ></notation>
+    </div>
+    <div class="h-padding-34 hot-key" v-if="articleSwitch==2">
+      <div class="hot-title">热门文章</div>
+      <div
+        class="subtitle"
+        v-for="(l,k) in blockArticle.links"
+        :key="k"
+        @click="onAritcleClick(l)"
+      >{{l.title}}</div>
+    </div>
+    <div v-if="articleSwitch==1">
+      <!-- 当没有结果时 -->
+      <div v-if="!showResult" class="search-noresult">
+        <div class="h-padding-34 info">
+          <!-- <i class="iconfont icon-wu" ></i> -->
+          <span class="no-data-tip">该小区数据暂未对外开放</span>
         </div>
-        <div class="h-padding-34 hot-key" v-if="articleSwitch==1&&showHotKey">
-            <div class="hot-title">热门楼盘</div>
-            <notation :width="150" :list="list" @onClick="onNotationClick" :marginRight="10" :backgroundColor="'rgba(245,245,245,1)'" :fontColor="'rgba(51,51,51,1)'" :clickable=false :isNonBack=true :borderColor="'rgba(245,245,245,1)'"></notation>
-        </div>
-        <div class="h-padding-34 hot-key" v-if="articleSwitch==2">
-            <div class="hot-title">热门文章</div>
-            <div class="subtitle" v-for="(l,k) in blockArticle.links" :key="k" @click="onAritcleClick(l)">{{l.title}}</div>
-        </div>
-        <div v-if="articleSwitch==1">
-          <!-- 当没有结果时 -->
-          <div v-if="!showResult" class="search-noresult">
-            <div class="h-padding-34 info" >
-              <i class="iconfont icon-wu" ></i>
-              <span>暂未搜索到~</span>
-            </div>
-            <div class="h-padding-34 recommend">
-              <div style="font-size:36rpx;">推荐楼盘</div>
+        <div class="h-padding-34 recommend">
+          <!-- <div style="font-size:36rpx;">推荐楼盘</div>
               <div v-for="(r,k) in recommenList" :key="k">
                 <g-card :info="r" @onClick="goView"></g-card>
-              </div>
-            </div>
-          </div>
-          <!-- 当有结果时 -->
-          <div class="h-padding-34 search-result" v-if="showResult">
-            <div v-for="(r,k) in searchList" :key="k">
-              <g-card :info="r" @onClick="goView"></g-card>
-            </div>
+          </div>-->
+          <div class="img-block">
+            <img :src="host + 'search-analysis.png'" class="search-img">
+            <img :src="host + 'search-ask2.png'" class="search-ask" @click="setClipboardData">
           </div>
         </div>
-        <div class="change" @click="fresh">
-            <div class="e-center content">
-                <i class="iconfont icon-dingbu-"></i>
-            </div>
+      </div>
+      <!-- 当有结果时 -->
+      <div class="h-padding-34 search-result" v-if="showResult">
+        <div v-for="(r,k) in searchList" :key="k">
+          <g-card :info="r" @onClick="goView"></g-card>
         </div>
+      </div>
     </div>
+    <div v-if="showResult" class="change" @click="fresh">
+      <div class="e-center content">
+        <i class="iconfont icon-dingbu-"></i>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -137,7 +158,8 @@ export default {
       articleSwitch: 1,
       blockArticle: {
         links: []
-      }
+      },
+      host: api.BASE_HOST
     };
   },
   computed: {
@@ -159,6 +181,13 @@ export default {
       wx.pageScrollTo({
         scrollTop: 0,
         duration: 1000
+      });
+    },
+    setClipboardData() {
+      wx.setClipboardData({
+        data: "Ivan_Ivan2",
+        success(res) {
+        }
       });
     },
     onAritcleClick(i) {
@@ -367,6 +396,34 @@ export default {
   }
 }
 .search-noresult {
+  .no-data-tip {
+    display: inline-block;
+    margin-top: 26px;
+    margin-bottom: 26px;
+    font-size: 16px;
+    font-family: PingFang SC;
+    font-weight: 400;
+    line-height: 22px;
+    color: rgba(153, 153, 153, 1);
+    opacity: 1;
+  }
+  .img-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .search-img {
+      width: 648rpx;
+      height: 446rpx;
+    }
+    .search-ask {
+      width: 100%;
+      height: 106rpx;
+      box-shadow: 8px 11px 17px rgba(85, 237, 181, 0.16);
+      opacity: 1;
+    }
+  }
+
   .info {
     display: flex;
     justify-content: center;
